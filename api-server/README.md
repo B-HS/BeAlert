@@ -3,8 +3,8 @@
 uvicorn main:app --reload
 ---
 - [x] api긁기 
-- [] cron설정 
-- 배포
+- [ ] cron설정 
+- [ ] 배포
 
 
 # 데이터
