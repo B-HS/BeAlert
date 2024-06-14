@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+requests
+pymysql
+pyOpenSSL
+httpx
