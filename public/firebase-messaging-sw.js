@@ -1,5 +1,3 @@
-// Service Worker
-
 self.addEventListener("install", () => {
     console.log("FCM installing");
     self.skipWaiting();
@@ -38,7 +36,6 @@ self.addEventListener("push", async (e) => {
         })
     }
 
-    // Function to get location data from IndexedDB with id: 1
     const getLocationData = async () => {
         try {
             const db = await openDatabase();
@@ -63,7 +60,6 @@ self.addEventListener("push", async (e) => {
         }
     };
 
-    // Fetch location data with id: 1
     let locationInfo = "";
     try {
         locationInfo = await getLocationData();
