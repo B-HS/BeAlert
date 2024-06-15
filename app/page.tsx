@@ -1,4 +1,4 @@
-const Home = () => {
+const Home = async () => {
     return (
         <section>
             <AccordionDemo />

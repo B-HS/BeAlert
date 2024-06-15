@@ -1,4 +1,3 @@
-import SiteHeader from '@/components/header/header'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
@@ -8,7 +7,7 @@ import { ReactNode } from 'react'
 import './globals.css'
 
 const GoToTop = dynamic(() => import('@/components/go-top-top'), { ssr: false })
-
+const SiteHeader = dynamic(() => import('@/components/header/header'), { ssr: false })
 const fontRound = M_PLUS_Rounded_1c({
     subsets: ['latin'],
     variable: '--font-mplus',
@@ -20,12 +19,13 @@ export const metadata: Metadata = {
     description: 'HOT DEAL CRAWLING SITE',
 }
 
-const Layout = ({ children }: { children: ReactNode }) => {
+const Layout = async ({ children }: { children: ReactNode }) => {
+    const vapidKey = process.env.APP_VAPIDKEY || ''
     return (
         <html lang='ko' suppressHydrationWarning>
             <body className={cn('container p-0 max-w-screen-2xl h-dvh bg-background font-mplus antialiased flex flex-col', fontRound.variable)}>
                 <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-                    <SiteHeader />
+                    <SiteHeader vapidKey={vapidKey} />
                     <section className='flex flex-col flex-1 min-w-[350px] size-full'>
                         <GoToTop />
                         {children}
