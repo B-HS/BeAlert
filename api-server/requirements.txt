@@ -7,3 +7,6 @@ pymysql
 pyOpenSSL
 httpx
 apscheduler
+firebase_admin
+credentials
+messaging
