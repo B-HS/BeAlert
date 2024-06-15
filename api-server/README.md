@@ -1,9 +1,10 @@
 # 백엔드서버
+- ChatGPT는 신이다 찬양해
 ---
 uvicorn main:app --reload
 ---
 - [x] api긁기 
-- [ ] cron설정 
+- [x] cron설정 
 - [ ] 배포
 
 

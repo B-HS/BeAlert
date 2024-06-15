@@ -42,5 +42,4 @@ def fetch_disaster_messages():
         for row in rows:
             row["create_date"] = datetime.strptime(row["create_date"], "%Y/%m/%d %H:%M:%S")
             messages.append(row)
-    print(messages)
     return messages
