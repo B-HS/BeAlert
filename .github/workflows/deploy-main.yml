@@ -31,13 +31,20 @@ jobs:
             git pull
             pnpm i
             pnpm build
-            docker stop bealert-back
-            docker rm bealert-back
+            docker stop bealert-back || true
+            docker rm bealert-back || true
+
+            # Kill process using port 15551 if exists
+            pid=$(netstat -tuln | grep :15551 | awk '{print $7}' | cut -d '/' -f1)
+            if [ -n "$pid" ]; then
+              kill -9 $pid
+            fi
+
             chmod +x build_and_run.sh
             ./build_and_run.sh
             nohup pnpm start --port 15551 &
             sleep 5
-            if ! lsof -i:15551; then
+            if ! netstat -tuln | grep :15551; then
               echo "Server did not start correctly" >&2
               cat server.log
               exit 1
