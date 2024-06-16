@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Navigate to the nerv-ko directory
-cd nerv-ko
-
-# Create the Dockerfile
 cat <<EOF > Dockerfile
 # Use the official Python image from the Docker Hub
 FROM python:3.10-slim
@@ -27,8 +23,9 @@ EXPOSE 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 EOF
 
-# Build the Docker image
-docker build -t my-fastapi-app .
+IMAGE_NAME=bealert-back
+CONTAINER_NAME=bealert-back
 
-# Run the Docker container
-docker run -d -p 30003:8000 my-fastapi-app
+docker build -t $IMAGE_NAME .
+
+docker run -d -p 8000:8000 --name $CONTAINER_NAME $IMAGE_NAME
