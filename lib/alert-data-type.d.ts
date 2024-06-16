@@ -6,3 +6,13 @@ type DisasterMessage = {
     msg: string
     send_platform: string
 }
+
+type ResponseDisasterMessage = {
+    totalPages: number
+    totalElements: number
+    currentPage: number
+    isNext: boolean
+    isPrev: boolean
+    elementsPerPage: number
+    messageList: DisasterMessage[]
+}

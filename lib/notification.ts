@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
 import backend from './fetch-config'
 import { getToken, messaging, onMessage, unsubscribeFromFCM } from './firebase'
+import { AlertApi } from './alert-api'
 
 const useFCM = (vapidKey: string) => {
+    const alertApi = new AlertApi()
     const requestPermission = async () => {
         if (!('Notification' in window)) {
             return
@@ -90,7 +92,6 @@ const useFCM = (vapidKey: string) => {
             await unsubscribeFromFCM(vapidKey)
             console.log('Unsubscribed from FCM.')
 
-            // Optionally, unregister service worker if needed
             await unregisterServiceWorker()
             localStorage.removeItem('fcm_token')
             console.log('All service workers unregistered.')
@@ -101,7 +102,7 @@ const useFCM = (vapidKey: string) => {
 
     useEffect(() => {
         if (localStorage.getItem('fcm_token')) {
-            getToken(messaging, { vapidKey }).then((token) => {
+            getToken(messaging, { vapidKey }).then(() => {
                 console.log('Token called')
             })
             onMessage(messaging, (payload) => {
@@ -112,13 +113,7 @@ const useFCM = (vapidKey: string) => {
 
     const sendTokenToServer = async (token: string) => {
         try {
-            const response = await backend('/addtoken/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token }),
-            })
+            const response = await alertApi.requestAddToken(token)
 
             if (!response) {
                 throw new Error('Failed to send token to server')
@@ -130,12 +125,7 @@ const useFCM = (vapidKey: string) => {
 
     const removeTokenFromServer = async (token: string) => {
         try {
-            const response = await backend(`/deletetoken/${token}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
+            const response = await alertApi.requestDeleteToken(token)
             if (!response) {
                 throw new Error('Failed to remove token from server')
             }
@@ -144,143 +134,40 @@ const useFCM = (vapidKey: string) => {
         }
     }
 
-    const openDatabase = (): Promise<IDBDatabase> => {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open('LocationDB', 1)
-
-            request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-                const db = (event.target as IDBOpenDBRequest).result
-                if (!db.objectStoreNames.contains('locations')) {
-                    console.log('Creating locations object store')
-                    db.createObjectStore('locations', { keyPath: 'id' })
-                }
-            }
-
-            request.onsuccess = (event: Event) => {
-                console.log('Database opened successfully')
-                const db = (event.target as IDBOpenDBRequest).result
-                resolve(db)
-            }
-
-            request.onerror = (event: Event) => {
-                reject(`IndexedDB error: ${(event.target as IDBOpenDBRequest).error?.message}`)
-            }
-        })
-    }
-
-    const checkAndCreateObjectStore = async (): Promise<void> => {
-        const db = await openDatabase()
-        if (!db.objectStoreNames.contains('locations')) {
-            db.close()
-            const request = indexedDB.open('LocationDB', db.version + 1)
-            request.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-                const db = (event.target as IDBOpenDBRequest).result
-                if (!db.objectStoreNames.contains('locations')) {
-                    console.log('Creating locations object store during upgrade')
-                    db.createObjectStore('locations', { keyPath: 'id' })
-                }
-            }
-
-            return new Promise((resolve, reject) => {
-                request.onsuccess = () => {
-                    console.log("Object store 'locations' created successfully")
-                    resolve()
-                }
-
-                request.onerror = (event: Event) => {
-                    reject(`IndexedDB upgrade error: ${(event.target as IDBOpenDBRequest).error?.message}`)
-                }
-            })
-        }
-        db.close()
-    }
-
-    const resetIndexedDb = async (): Promise<void> => {
-        const db = await openDatabase()
-        const transaction = db.transaction(['locations'], 'readwrite')
-        const store = transaction.objectStore('locations')
-        const clearRequest = store.clear()
-        clearRequest.onerror = (event: Event) => {
-            console.error(`Error clearing the locations object store:`, (event.target as IDBRequest).error?.message)
-        }
-        transaction.oncomplete = () => {
-            db.close()
-        }
-    }
-
-    const removeLocationInfoFromIndexedDb = async (valueToRemove: string): Promise<void> => {
+    const requestLocationListByToken = async (): Promise<void> => {
         try {
-            await checkAndCreateObjectStore()
-            const db = await openDatabase()
-            const transaction = db.transaction(['locations'], 'readwrite')
-            const store = transaction.objectStore('locations')
-            const getRequest = store.get('1')
-
-            getRequest.onsuccess = () => {
-                const existingData = getRequest.result
-                if (existingData) {
-                    const updatedInfo = existingData.info
-                        .split(',')
-                        .filter((value: string) => value !== valueToRemove)
-                        .join(',')
-                    const updateRequest = store.put({ id: '1', info: updatedInfo })
-                    updateRequest.onsuccess = () => {
-                        console.log(`Value ${valueToRemove} removed from IndexedDB`)
-                    }
-                    updateRequest.onerror = (event: Event) => {
-                        console.error(`Error removing value ${valueToRemove}:`, (event.target as IDBRequest).error?.message)
-                    }
-                }
-            }
-
-            getRequest.onerror = (event: Event) => {
-                console.error(`Error retrieving location 1:`, (event.target as IDBRequest).error?.message)
-            }
-
-            transaction.oncomplete = () => {
-                db.close()
-            }
+            const currentToken = await getToken(messaging, { vapidKey })
+            await alertApi.requestSubscribedListByToken(currentToken)
         } catch (error) {
-            console.error('Failed to remove value from IndexedDB:', error)
+            console.error('Failed to update location list in IndexedDB:', error)
         }
     }
 
-    const addLocationInfoToIndexedDb = async (location: string = '1'): Promise<void> => {
+    const requestSubscribeLocation = async (location: string): Promise<void> => {
         try {
-            await checkAndCreateObjectStore()
-            const db = await openDatabase()
-            const transaction = db.transaction(['locations'], 'readwrite')
-            const store = transaction.objectStore('locations')
-            const getRequest = store.get('1')
-
-            getRequest.onsuccess = () => {
-                const existingData = getRequest.result
-                let newData = location
-                if (existingData) {
-                    newData = `${existingData.info},${location}`
-                }
-                const addRequest = store.put({ id: '1', info: newData })
-                addRequest.onsuccess = () => {
-                    console.log(`Location ${location} added to IndexedDB`)
-                }
-                addRequest.onerror = (event: Event) => {
-                    console.error(`Error adding location ${location}:`, (event.target as IDBRequest).error?.message)
-                }
-            }
-
-            getRequest.onerror = (event: Event) => {
-                console.error(`Error retrieving location 1:`, (event.target as IDBRequest).error?.message)
-            }
-
-            transaction.oncomplete = () => {
-                db.close()
-            }
+            const currentToken = await getToken(messaging, { vapidKey })
+            await alertApi.requestSubscribeLocation(location, currentToken)
         } catch (error) {
-            console.error('Failed to add location to IndexedDB:', error)
+            console.error('Failed to subscribe location:', error)
         }
     }
 
-    return { requestPermission, requestUnsubscribe, addLocationInfoToIndexedDb, resetIndexedDb, removeLocationInfoFromIndexedDb }
+    const requestUnsubscribeLocation = async (location: string): Promise<void> => {
+        try {
+            const currentToken = await getToken(messaging, { vapidKey })
+            await alertApi.requestUnsubscribeLocation(location, currentToken)
+        } catch (error) {
+            console.error('Failed to unsubscribe location:', error)
+        }
+    }
+
+    return {
+        requestPermission,
+        requestUnsubscribe,
+        requestLocationListByToken,
+        requestSubscribeLocation,
+        requestUnsubscribeLocation,
+    }
 }
 
 export default useFCM

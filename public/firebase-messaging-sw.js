@@ -8,7 +8,7 @@ self.addEventListener("install", (event) => {
             const response = await fetch('/locations.json');
             const locations = await response.json();
             locationMap = locations.reduce((map, location) => {
-                map[location.location_id.toString()] = `${location.province} ${location.city} ${location.town}`;
+                map[location.location_id.toString()] = `${location.province} ${location.city} ${location.town}`.trim();
                 return map;
             }, {});
         })()
