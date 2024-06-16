@@ -55,6 +55,7 @@ jobs:
             chmod +x build_and_run.sh
             ./build_and_run.sh
             nohup pnpm start --port 15551 &
+            disown
             sleep 5
             if ! ps aux | grep '[1]5551'; then
               echo "Server did not start correctly" >&2
