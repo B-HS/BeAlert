@@ -121,12 +121,23 @@ def create_location(db: Session, location: schemas.LocationCreate):
     db.refresh(db_location)
     return db_location
 
-def delete_location(db: Session, location_id: int):
+def delete_location_by_token_and_location(db: Session, token: str, location: str):
     try:
-        db.query(models.Location).filter(models.Location.id == location_id).delete()
-        db.commit()
-        return {"message": "Location deleted successfully"}
+        location_entry = db.query(models.Location).filter(
+            models.Location.token_value == token,
+            models.Location.location == location
+        ).first()
+        
+        if location_entry:
+            unsubscribe_token_from_locations(token, [location])
+            db.delete(location_entry)
+            db.commit()
+            return {"message": "Location deleted successfully"}
+        else:
+            return {"message": "Location not found"}
     except IntegrityError as e:
         db.rollback()
         print(f"IntegrityError: {e}")
         return {"message": "Location deletion failed"}
+
+

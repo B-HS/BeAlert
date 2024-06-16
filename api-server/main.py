@@ -98,9 +98,9 @@ def read_locations_by_token(token: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No locations found for this token.")
     return locations
 
-@app.delete("/deletelocation/{location_id}")
-def delete_location(location_id: int, db: Session = Depends(get_db)):
-    result = crud.delete_location(db, location_id)
+@app.delete("/deletelocation/{token}/{location}")
+def delete_location_by_token_and_location(token: str, location: str, db: Session = Depends(get_db)):
+    result = crud.delete_location_by_token_and_location(db, token, location)
     if result.get("message") != "Location deleted successfully":
         raise HTTPException(status_code=404, detail="Location not found or could not be deleted.")
     return result
