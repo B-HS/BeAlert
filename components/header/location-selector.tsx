@@ -33,7 +33,6 @@ const LocationSelector = ({ vapidKey }: { vapidKey: string }) => {
                 location.city.toLowerCase().includes(value.toLowerCase()) ||
                 location.town.toLowerCase().includes(value.toLowerCase()),
         )
-        console.log('Search Result:', result)
         setSearchedLocations(result)
     }
 
