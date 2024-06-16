@@ -7,7 +7,7 @@ const SettingSheet = ({ children }: { children: ReactNode }) => {
     return (
         <Sheet>
             <SheetTrigger asChild>{children}</SheetTrigger>
-            <SheetContent>
+            <SheetContent className='w-full sm:w-auto'>
                 <SheetHeader>
                     <SheetTitle>설정</SheetTitle>
                 </SheetHeader>

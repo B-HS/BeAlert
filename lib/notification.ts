@@ -63,7 +63,6 @@ const useFCM = (vapidKey: string) => {
             } else {
                 console.log('No push subscription found')
             }
-            window.location.reload()
 
             return subscription
         } catch (error) {
@@ -102,6 +101,7 @@ const useFCM = (vapidKey: string) => {
             await unregisterServiceWorker()
             localStorage.removeItem('fcm_token')
             console.log('All service workers unregistered.')
+            window.location.reload()
         } catch (error) {
             console.error('Error while unsubscribing:', error)
         }
@@ -109,9 +109,7 @@ const useFCM = (vapidKey: string) => {
 
     useEffect(() => {
         if (localStorage.getItem('fcm_token')) {
-            getToken(messaging, { vapidKey }).then(() => {
-                console.log('Token called')
-            })
+            getToken(messaging, { vapidKey })
             onMessage(messaging, (payload) => {
                 console.log('Message received. ', payload)
             })
