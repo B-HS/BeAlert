@@ -23,6 +23,11 @@ const Layout = async ({ children }: { children: ReactNode }) => {
     const vapidKey = process.env.APP_VAPIDKEY || ''
     return (
         <html lang='ko' suppressHydrationWarning>
+            <head>
+                <link rel='manifest' href='/manifest.json' />
+                <meta name='theme-color' content='#FFF' />
+                <link rel='apple-touch-icon' href='/icons/icon-192x192.png' />
+            </head>
             <body className={cn('max-w-screen-2xl h-dvh font-mplus antialiased', fontRound.variable)}>
                 <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
                     <SiteHeader vapidKey={vapidKey} />

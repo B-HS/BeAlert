@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-import backend from './fetch-config'
-import { getToken, messaging, onMessage, unsubscribeFromFCM } from './firebase'
 import { AlertApi } from './alert-api'
+import { getToken, messaging, onMessage, unsubscribeFromFCM } from './firebase'
 
 const useFCM = (vapidKey: string) => {
     const alertApi = new AlertApi()

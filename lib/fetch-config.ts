@@ -1,18 +1,13 @@
 const BASEURL = process.env.NEXT_PUBLIC_BACKEND_URL
 
-type FetchOptions = {
-    method?: string
-    headers?: HeadersInit
-    body?: BodyInit | null
-}
-
-const backend = async (endpoint: string, options: FetchOptions = {}) => {
+const backend = async (endpoint: string, options: RequestInit = {}) => {
     const url = `${BASEURL}${endpoint}`
-    const defaultOptions: FetchOptions = {
+    const defaultOptions: RequestInit = {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
+        cache: 'no-store',
     }
 
     const fetchOptions = { ...defaultOptions, ...options }

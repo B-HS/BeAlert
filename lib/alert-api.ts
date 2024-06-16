@@ -20,7 +20,7 @@ export class AlertApi {
         })
     }
 
-    async requestNotificationList(page: number = 1, limit: number = 10) {
+    async requestNotificationList(page: number = 0, limit: number = 10) {
         return (await backend(`/disaster_messages/?skip=${page * 10}&limit=${limit}`)) as ResponseDisasterMessage
     }
 
