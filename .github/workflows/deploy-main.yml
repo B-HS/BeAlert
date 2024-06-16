@@ -18,7 +18,7 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Execute remote commands
+      - name: Install and Build Dependencies
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             if [ -d "/home/BeAlert" ]; then
@@ -30,34 +30,52 @@ jobs:
             fi
             git pull
             
+            # Remove .next folder
+            rm -rf .next
+
             # Generate .env file
             echo "APP_VAPIDKEY=${{ secrets.APP_VAPIDKEY }}" > .env
             echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
             
             pnpm i
             pnpm build
+          EOF
+
+      - name: Check Port and Stop Existing Services
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             docker stop bealert-back || true
             docker rm bealert-back || true
 
             # Kill process using port 15551 if exists
-            pid=$(ps aux | grep '[1]5551' | awk '{print $2}')
+            pid=$(sudo ss -lptn 'sport = :15551' | awk 'NR>1 {print $6}' | cut -d',' -f2 | cut -d'=' -f2)
             if [ -n "$pid" ]; then
               echo "Killing process $pid using port 15551"
               kill -9 $pid
             fi
 
             # Verify the process has been killed
-            if ps aux | grep '[1]5551'; then
+            if sudo ss -lptn 'sport = :15551'; then
               echo "Failed to kill the process using port 15551" >&2
               exit 1
             fi
+          EOF
 
+      - name: Start Application
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /home/BeAlert
             chmod +x build_and_run.sh
             ./build_and_run.sh
             nohup pnpm start --port 15551 &
             disown
+          EOF
+
+      - name: Verify Application is Running
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             sleep 5
-            if ! ps aux | grep '[1]5551'; then
+            if ! sudo ss -lptn 'sport = :15551'; then
               echo "Server did not start correctly" >&2
               cat server.log
               exit 1
