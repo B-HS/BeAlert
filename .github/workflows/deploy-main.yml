@@ -47,11 +47,16 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             docker stop bealert-back || true
             docker rm bealert-back || true
+
+            # Kill process using port 15551 if exists
             pid=\$(sudo ss -lptn 'sport = :15551' | awk 'NR>1 {print \$6}' | cut -d',' -f2 | cut -d'=' -f2)
+            echo 'Found PID: '\$pid
             if [ -n \"\$pid\" ]; then
-              echo 'Killing process \$pid using port 15551'
+              echo 'Killing process '\$pid' using port 15551'
               kill -9 \$pid
             fi
+
+            # Verify the process has been killed
             if sudo ss -lptn 'sport = :15551' | grep -q :15551; then
               echo 'Failed to kill the process using port 15551' >&2
               exit 1
