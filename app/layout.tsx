@@ -15,8 +15,8 @@ const fontRound = M_PLUS_Rounded_1c({
 })
 
 export const metadata: Metadata = {
-    title: 'B-Hotdeal',
-    description: 'HOT DEAL CRAWLING SITE',
+    title: 'BeAlert',
+    description: '재난 문자 현황 및 웹 알림 서비스',
 }
 
 const Layout = async ({ children }: { children: ReactNode }) => {

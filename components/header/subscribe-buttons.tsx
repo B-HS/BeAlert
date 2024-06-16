@@ -1,46 +1,53 @@
 'use client'
 import useFCM from '@/lib/notification'
-import { Button } from '../ui/button'
 import { useEffect, useState } from 'react'
+import { Button } from '../ui/button'
+import SettingSheet from './setting-sheet'
+// (location?: string) => Promise<void>
 const SubscribeButtons = ({ vapidKey }: { vapidKey: string }) => {
     const { requestPermission, requestUnsubscribe, addLocationInfoToIndexedDb } = useFCM(vapidKey)
-    const [isSubscribed, setIsSubscribed] = useState(false)
+    const [isSubscribed, setIsSubscribed] = useState<boolean>(() => Boolean(localStorage.getItem('fcm_token')))
+
     useEffect(() => {
-        const fcm_token = localStorage.getItem('fcm_token')
-        fcm_token && setIsSubscribed(true)
+        const fcmToken = localStorage.getItem('fcm_token')
+        setIsSubscribed(Boolean(fcmToken))
     }, [])
 
-    const subscribe = () => {
-        requestPermission()
-            .then(() => setIsSubscribed(true))
-            .catch(() => setIsSubscribed(false))
+    const handleSubscribe = async () => {
+        try {
+            await requestPermission()
+            setIsSubscribed(true)
+        } catch {
+            setIsSubscribed(false)
+        }
     }
 
-    const unsubscribe = () => {
-        requestUnsubscribe().then(() => setIsSubscribed(false))
+    const handleUnsubscribe = async () => {
+        await requestUnsubscribe()
+        setIsSubscribed(false)
+    }
+
+    const handleAddLocation = () => {
+        addLocationInfoToIndexedDb('마산')
     }
 
     return (
         <section className='flex items-center gap-2'>
-            {!isSubscribed ? (
-                <Button className='px-0' variant={'link'} size={'sm'} onClick={subscribe}>
-                    구독
-                </Button>
-            ) : (
-                <Button className='px-0' variant={'link'} size={'sm'} onClick={unsubscribe}>
+            {isSubscribed ? (
+                <Button className='px-0' variant='link' size='sm' onClick={handleUnsubscribe}>
                     구독해지
                 </Button>
+            ) : (
+                <Button className='px-0' variant='link' size='sm' onClick={handleSubscribe}>
+                    구독
+                </Button>
             )}
-            <Button
-                className='px-0'
-                variant={'link'}
-                size={'sm'}
-                onClick={() => {
-                    addLocationInfoToIndexedDb('마산')
-                }}
-            >
-                설정
-            </Button>
+
+            <SettingSheet handleLocation={addLocationInfoToIndexedDb}>
+                <Button className='px-0' variant='link' size='sm'>
+                    설정
+                </Button>
+            </SettingSheet>
         </section>
     )
 }
