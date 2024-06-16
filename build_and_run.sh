@@ -28,4 +28,4 @@ CONTAINER_NAME=bealert-back
 
 docker build -t $IMAGE_NAME .
 
-docker run -d -p 8000:8000 --name $CONTAINER_NAME $IMAGE_NAME
+docker run -d -p 30003:8000 --name $CONTAINER_NAME $IMAGE_NAME

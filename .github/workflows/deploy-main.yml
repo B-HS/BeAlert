@@ -29,7 +29,10 @@ jobs:
               cd /home/BeAlert
             fi
             git pull
+            pnpm i
             pnpm build
+            docker stop bealert-back
+            docker rm bealert-back
             chmod +x build_and_run.sh
             ./build_and_run.sh
             pnpm start --port 15551
