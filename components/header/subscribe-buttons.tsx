@@ -35,7 +35,7 @@ const SubscribeButtons = ({ vapidKey }: { vapidKey: string }) => {
                 </Button>
             )}
 
-            <SettingSheet>
+            <SettingSheet vapidKey={vapidKey}>
                 <Button className='px-0' variant='link' size='sm'>
                     설정
                 </Button>

@@ -1466,12 +1466,6 @@ export const Locations = [
     {
         location_id: 6474,
         province: '세종특별자치시',
-        city: '세종특별자치시',
-        town: '',
-    },
-    {
-        location_id: 6474,
-        province: '세종특별자치시',
         city: '',
         town: '',
     },
@@ -1479,13 +1473,7 @@ export const Locations = [
         location_id: 6487,
         province: '임진강 수계지역(경기도 연천군,파주시)',
         city: '경기도',
-        town: '파주시',
-    },
-    {
-        location_id: 6487,
-        province: '임진강 수계지역(경기도 연천군,파주시)',
-        city: '경기도',
-        town: '연천군',
+        town: '파주시, 연천군',
     },
     {
         location_id: 6488,

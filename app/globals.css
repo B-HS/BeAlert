@@ -75,11 +75,11 @@
     }
 }
 
-::-webkit-scrollbar {
+.none-scroll::-webkit-scrollbar {
     display: none;
 }
 
-html {
+.none-scroll {
     scrollbar-width: none;
     scroll-behavior: smooth !important;
 }

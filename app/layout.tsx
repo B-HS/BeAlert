@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 const Layout = async ({ children }: { children: ReactNode }) => {
     const vapidKey = process.env.APP_VAPIDKEY || ''
     return (
-        <html lang='ko' suppressHydrationWarning>
+        <html lang='ko' suppressHydrationWarning className='none-scroll'>
             <head>
                 <link rel='manifest' href='/manifest.json' />
                 <meta name='theme-color' content='#FFF' />

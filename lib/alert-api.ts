@@ -35,12 +35,12 @@ export class AlertApi {
     }
 
     async requestSubscribedListByToken(token: string) {
-        return await backend(`/locations/by_token/${token}`, {
+        return (await backend(`/locations/by_token/${token}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
-        })
+        })) as { token_value: string; location: string; id: number }[]
     }
 
     async requestUnsubscribeLocation(location: string, token: string) {

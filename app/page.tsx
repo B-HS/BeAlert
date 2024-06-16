@@ -1,5 +1,6 @@
 import ListAccordian from '@/components/list/list-accordian'
 import LoadListMore from '@/components/list/load-list-more'
+import { Separator } from '@/components/ui/separator'
 import { AlertApi } from '@/lib/alert-api'
 
 const Home = async () => {
@@ -9,6 +10,7 @@ const Home = async () => {
 
     return (
         <section>
+            <Separator />
             <ListAccordian list={list} />
             <LoadListMore />
         </section>

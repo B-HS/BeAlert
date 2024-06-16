@@ -139,12 +139,12 @@ const useFCM = (vapidKey: string) => {
         }
     }
 
-    const requestLocationListByToken = async (): Promise<void> => {
+    const requestLocationListByToken = async () => {
         try {
             const currentToken = await getToken(messaging, { vapidKey })
-            await alertApi.requestSubscribedListByToken(currentToken)
+            return await alertApi.requestSubscribedListByToken(currentToken)
         } catch (error) {
-            console.error('Failed to update location list in IndexedDB:', error)
+            console.error('Failed to update location list:', error)
         }
     }
 

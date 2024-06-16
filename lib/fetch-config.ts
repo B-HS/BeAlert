@@ -14,8 +14,8 @@ const backend = async (endpoint: string, options: RequestInit = {}) => {
 
     try {
         const response = await fetch(url, fetchOptions)
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText)
+        if (!response) {
+            throw new Error('Network response was not ok ' + response)
         }
         return await response.json()
     } catch (error) {
