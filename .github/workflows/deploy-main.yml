@@ -1,0 +1,38 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Execute remote commands
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            if [ -d "/home/BeAlert" ]; then
+              cd /home/BeAlert
+            else
+              cd ~
+              git clone ${{ secrets.REPO_URL }} /home/BeAlert
+              cd /home/BeAlert
+            fi
+            git pull
+            pnpm build
+            chmod +x build_and_run.sh
+            ./build_and_run.sh
+            pnpm start --port 15551
+          EOF
+        env:
+          CI: true
