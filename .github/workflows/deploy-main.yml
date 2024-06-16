@@ -18,68 +18,63 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Install and Build Dependencies
+      - name: Prepare Deployment Directory
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-            if [ -d "/home/BeAlert" ]; then
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            if [ -d '/home/BeAlert' ]; then
               cd /home/BeAlert
+              git pull
             else
               cd ~
               git clone ${{ secrets.REPO_URL }} /home/BeAlert
               cd /home/BeAlert
             fi
-            git pull
-            
-            # Remove .next folder
-            rm -rf .next
+          "
 
-            # Generate .env file
-            echo "APP_VAPIDKEY=${{ secrets.APP_VAPIDKEY }}" > .env
-            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
-            
+      - name: Clean and Install Dependencies
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd /home/BeAlert
+            rm -rf .next
+            echo 'APP_VAPIDKEY=${{ secrets.APP_VAPIDKEY }}' > .env
+            echo 'NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}' >> .env
             pnpm i
             pnpm build
-          EOF
+          "
 
-      - name: Check Port and Stop Existing Services
+      - name: Stop Existing Services
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             docker stop bealert-back || true
             docker rm bealert-back || true
-
-            # Kill process using port 15551 if exists
-            pid=$(sudo ss -lptn 'sport = :15551' | awk 'NR>1 {print $6}' | cut -d',' -f2 | cut -d'=' -f2)
-            if [ -n "$pid" ]; then
-              echo "Killing process $pid using port 15551"
-              kill -9 $pid
+            pid=\$(sudo ss -lptn 'sport = :15551' | awk 'NR>1 {print \$6}' | cut -d',' -f2 | cut -d'=' -f2)
+            if [ -n \"\$pid\" ]; then
+              echo 'Killing process \$pid using port 15551'
+              kill -9 \$pid
             fi
-
-            # Verify the process has been killed
-            if sudo ss -lptn 'sport = :15551'; then
-              echo "Failed to kill the process using port 15551" >&2
+            if sudo ss -lptn 'sport = :15551' | grep -q :15551; then
+              echo 'Failed to kill the process using port 15551' >&2
               exit 1
             fi
-          EOF
+          "
 
       - name: Start Application
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd /home/BeAlert
             chmod +x build_and_run.sh
             ./build_and_run.sh
             nohup pnpm start --port 15551 &
             disown
-          EOF
+          "
 
       - name: Verify Application is Running
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             sleep 5
-            if ! sudo ss -lptn 'sport = :15551'; then
-              echo "Server did not start correctly" >&2
+            if ! sudo ss -lptn 'sport = :15551' | grep -q :15551; then
+              echo 'Server did not start correctly' >&2
               cat server.log
               exit 1
             fi
-          EOF
-        env:
-          CI: true
+          "
