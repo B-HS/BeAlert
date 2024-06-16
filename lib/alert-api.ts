@@ -7,7 +7,7 @@ export class AlertApi {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ token }),
+            body: JSON.stringify({ token, create_date: new Date().toISOString(), update_date: new Date().toISOString() }),
         })
     }
 

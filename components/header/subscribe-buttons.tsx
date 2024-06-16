@@ -16,15 +16,11 @@ const SubscribeButtons = ({ vapidKey }: { vapidKey: string }) => {
     const handleSubscribe = async () => {
         try {
             await requestPermission()
-            setIsSubscribed(true)
-        } catch {
-            setIsSubscribed(false)
-        }
+        } catch {}
     }
 
     const handleUnsubscribe = async () => {
         await requestUnsubscribe()
-        setIsSubscribed(false)
     }
 
     return (
