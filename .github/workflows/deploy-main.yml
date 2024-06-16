@@ -35,7 +35,7 @@ jobs:
             docker rm bealert-back
             chmod +x build_and_run.sh
             ./build_and_run.sh
-            pnpm start --port 15551
+            nohup pnpm start --port 15551 > server.log 2>&1 &
           EOF
         env:
           CI: true
