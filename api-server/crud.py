@@ -7,7 +7,7 @@ from firebase_admin import messaging
 def send_firebase_message(location_id: str, msg: str):
     message = messaging.Message(
         notification=messaging.Notification(
-            title="New Disaster Alert",
+            title=location_id,
             body=msg
         ),
         topic=location_id
@@ -41,7 +41,11 @@ def create_disaster_message(db: Session, disaster_message: schemas.DisasterMessa
     db.add(db_disaster_message)
     db.commit()
     db.refresh(db_disaster_message)
-    send_firebase_message(disaster_message.dict().get('location_id')  , disaster_message.dict().get('msg'))
+    
+    location_ids = disaster_message.dict().get('location_id').split(',')
+    for location_id in location_ids:
+        send_firebase_message(location_id.strip(), disaster_message.dict().get('msg'))
+    
     return db_disaster_message
 
 def load_disaster_messages_from_gov(db: Session, disaster_messages: list[schemas.DisasterMessageCreate]):
