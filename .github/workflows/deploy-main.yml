@@ -35,14 +35,14 @@ jobs:
             docker rm bealert-back || true
 
             # Kill process using port 15551 if exists
-            pid=$(netstat -tuln | grep :15551 | awk '{print $7}' | cut -d '/' -f1)
+            pid=$(ps aux | grep '[1]5551' | awk '{print $2}')
             if [ -n "$pid" ]; then
               echo "Killing process $pid using port 15551"
               kill -9 $pid
             fi
 
             # Verify the process has been killed
-            if netstat -tuln | grep :15551; then
+            if ps aux | grep '[1]5551'; then
               echo "Failed to kill the process using port 15551" >&2
               exit 1
             fi
@@ -51,7 +51,7 @@ jobs:
             ./build_and_run.sh
             nohup pnpm start --port 15551 &
             sleep 5
-            if ! netstat -tuln | grep :15551; then
+            if ! ps aux | grep '[1]5551'; then
               echo "Server did not start correctly" >&2
               cat server.log
               exit 1
