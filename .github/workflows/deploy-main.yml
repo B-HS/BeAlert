@@ -49,7 +49,7 @@ jobs:
             docker rm bealert-back || true
 
             # Kill process using port 15551 if exists
-            pid=\$(sudo ss -lptn 'sport = :15551' | awk 'NR>1 {print \$6}' | cut -d',' -f2 | cut -d'=' -f2)
+            pid=\$(sudo ss -lptn 'sport = :15551' | awk -F'[=,]' '/pid=/ {print \$2}')
             echo 'Found PID: '\$pid
             if [ -n \"\$pid\" ]; then
               echo 'Killing process '\$pid' using port 15551'
