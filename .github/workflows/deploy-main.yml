@@ -29,6 +29,11 @@ jobs:
               cd /home/BeAlert
             fi
             git pull
+            
+            # Generate .env file
+            echo "APP_VAPIDKEY=${{ secrets.APP_VAPIDKEY }}" > .env
+            echo "NEXT_PUBLIC_BACKEND_URL=${{ secrets.NEXT_PUBLIC_BACKEND_URL }}" >> .env
+            
             pnpm i
             pnpm build
             docker stop bealert-back || true
