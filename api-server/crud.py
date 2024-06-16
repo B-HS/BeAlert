@@ -18,6 +18,14 @@ def send_firebase_message(location_id: str, msg: str):
     except Exception as e:
         print(f"Failed to send message to topic {location_id}: {e}")
 
+def unsubscribe_token_from_locations(token: str, locations: list):
+    try:
+        response = messaging.unsubscribe_from_topic([token], locations)
+        return response
+    except Exception as e:
+        print(f"Failed to unsubscribe token {token} from topics {locations}: {e}")
+        return None
+
 
 def get_disaster_message(db: Session, message_id: int):
     return db.query(models.DisasterMessage).filter(models.DisasterMessage.id == message_id).first()
@@ -81,6 +89,10 @@ def create_token(db: Session, token: schemas.TokenCreate):
 
 def delete_token(db: Session, token: str):
     try:
+        locations = db.query(models.Location).filter(models.Location.token_value == token).all()
+        location_names = [location.location for location in locations]
+        unsubscribe_token_from_locations(token, location_names)
+        db.query(models.Location).filter(models.Location.token_value == token).delete()
         db.query(models.Token).filter(models.Token.token == token).delete()
         db.commit()
         return {"message": "Token deleted successfully"}

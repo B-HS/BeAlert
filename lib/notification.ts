@@ -16,17 +16,22 @@ const useFCM = (vapidKey: string) => {
             }
 
             console.log('Notification permission granted.')
+            await navigator.serviceWorker
+                .register('/firebase-messaging-sw.js', { scope: '/firebase-cloud-messaging-push-scope' })
+                .then(async (reg) => {
+                    console.log('Service worker registered:', reg)
 
-            const currentToken = await getToken(messaging, { vapidKey })
-            if (currentToken) {
-                console.log('FCM Token:', currentToken)
-                await sendTokenToServer(currentToken)
-                console.log('Token sent to server.')
-            } else {
-                console.log('No registration token available. Request permission to generate one.')
-            }
+                    const currentToken = await getToken(messaging, { vapidKey })
+                    if (currentToken) {
+                        console.log('FCM Token:', currentToken)
+                        await sendTokenToServer(currentToken)
+                        console.log('Token sent to server.')
+                    } else {
+                        console.log('No registration token available. Request permission to generate one.')
+                    }
 
-            localStorage.setItem('fcm_token', currentToken)
+                    localStorage.setItem('fcm_token', currentToken)
+                })
         } catch (error) {
             console.log('Error during subscription:', error)
         }
@@ -131,7 +136,7 @@ const useFCM = (vapidKey: string) => {
                     'Content-Type': 'application/json',
                 },
             })
-            if (!response.ok) {
+            if (!response) {
                 throw new Error('Failed to remove token from server')
             }
         } catch (error) {
