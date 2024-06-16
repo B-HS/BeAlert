@@ -1,4 +1,3 @@
-# schemas.py
 from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
@@ -31,12 +30,12 @@ class PaginatedDisasterMessages(BaseModel):
 
 class TokenBase(BaseModel):
     token: str = Field(..., min_length=1, max_length=255)
-    create_date: Optional[datetime]
-    update_date: Optional[datetime]
+    create_date: Optional[datetime] = None
+    update_date: Optional[datetime] = None
 
 class TokenCreate(TokenBase):
     token: str = Field(..., min_length=1, max_length=255)
-    
+
 class Token(TokenBase):
     token: str
     class Config:
