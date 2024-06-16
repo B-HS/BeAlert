@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { messaging, getToken, onMessage, unsubscribeFromFCM } from './firebase'
 import backend from './fetch-config'
+import { getToken, messaging, onMessage, unsubscribeFromFCM } from './firebase'
 
 const useFCM = (vapidKey: string) => {
     const requestPermission = async () => {
@@ -102,7 +102,7 @@ const useFCM = (vapidKey: string) => {
     useEffect(() => {
         if (localStorage.getItem('fcm_token')) {
             getToken(messaging, { vapidKey }).then((token) => {
-                console.log(token)
+                console.log('Token called')
             })
             onMessage(messaging, (payload) => {
                 console.log('Message received. ', payload)
@@ -182,7 +182,7 @@ const useFCM = (vapidKey: string) => {
             }
 
             return new Promise((resolve, reject) => {
-                request.onsuccess = (event: Event) => {
+                request.onsuccess = () => {
                     console.log("Object store 'locations' created successfully")
                     resolve()
                 }
@@ -195,15 +195,71 @@ const useFCM = (vapidKey: string) => {
         db.close()
     }
 
+    const resetIndexedDb = async (): Promise<void> => {
+        const db = await openDatabase()
+        const transaction = db.transaction(['locations'], 'readwrite')
+        const store = transaction.objectStore('locations')
+        const clearRequest = store.clear()
+        clearRequest.onerror = (event: Event) => {
+            console.error(`Error clearing the locations object store:`, (event.target as IDBRequest).error?.message)
+        }
+        transaction.oncomplete = () => {
+            db.close()
+        }
+    }
+
+    const removeLocationInfoFromIndexedDb = async (valueToRemove: string): Promise<void> => {
+        try {
+            await checkAndCreateObjectStore()
+            const db = await openDatabase()
+            const transaction = db.transaction(['locations'], 'readwrite')
+            const store = transaction.objectStore('locations')
+            const getRequest = store.get('1')
+
+            getRequest.onsuccess = () => {
+                const existingData = getRequest.result
+                if (existingData) {
+                    const updatedInfo = existingData.info
+                        .split(',')
+                        .filter((value: string) => value !== valueToRemove)
+                        .join(',')
+                    const updateRequest = store.put({ id: '1', info: updatedInfo })
+                    updateRequest.onsuccess = () => {
+                        console.log(`Value ${valueToRemove} removed from IndexedDB`)
+                    }
+                    updateRequest.onerror = (event: Event) => {
+                        console.error(`Error removing value ${valueToRemove}:`, (event.target as IDBRequest).error?.message)
+                    }
+                }
+            }
+
+            getRequest.onerror = (event: Event) => {
+                console.error(`Error retrieving location 1:`, (event.target as IDBRequest).error?.message)
+            }
+
+            transaction.oncomplete = () => {
+                db.close()
+            }
+        } catch (error) {
+            console.error('Failed to remove value from IndexedDB:', error)
+        }
+    }
+
     const addLocationInfoToIndexedDb = async (location: string = '1'): Promise<void> => {
         try {
             await checkAndCreateObjectStore()
             const db = await openDatabase()
             const transaction = db.transaction(['locations'], 'readwrite')
             const store = transaction.objectStore('locations')
-            const clearRequest = store.clear()
-            clearRequest.onsuccess = () => {
-                const addRequest = store.put({ id: '1', info: location })
+            const getRequest = store.get('1')
+
+            getRequest.onsuccess = () => {
+                const existingData = getRequest.result
+                let newData = location
+                if (existingData) {
+                    newData = `${existingData.info},${location}`
+                }
+                const addRequest = store.put({ id: '1', info: newData })
                 addRequest.onsuccess = () => {
                     console.log(`Location ${location} added to IndexedDB`)
                 }
@@ -211,9 +267,11 @@ const useFCM = (vapidKey: string) => {
                     console.error(`Error adding location ${location}:`, (event.target as IDBRequest).error?.message)
                 }
             }
-            clearRequest.onerror = (event: Event) => {
-                console.error(`Error clearing the locations object store:`, (event.target as IDBRequest).error?.message)
+
+            getRequest.onerror = (event: Event) => {
+                console.error(`Error retrieving location 1:`, (event.target as IDBRequest).error?.message)
             }
+
             transaction.oncomplete = () => {
                 db.close()
             }
@@ -221,7 +279,8 @@ const useFCM = (vapidKey: string) => {
             console.error('Failed to add location to IndexedDB:', error)
         }
     }
-    return { requestPermission, requestUnsubscribe, addLocationInfoToIndexedDb }
+
+    return { requestPermission, requestUnsubscribe, addLocationInfoToIndexedDb, resetIndexedDb, removeLocationInfoFromIndexedDb }
 }
 
 export default useFCM
