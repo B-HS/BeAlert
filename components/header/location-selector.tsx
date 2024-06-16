@@ -62,20 +62,39 @@ const LocationSelector = ({ vapidKey }: { vapidKey: string }) => {
     }, [])
 
     return (
-        <section className='flex flex-col gap-5'>
-            <Separator />
-            <span className='font-semibold text-xl'>검색</span>
-            <Input placeholder='지역명을 입력하세요' value={value} onChange={(e) => setValue(e.target.value)} />
-            <Separator />
-            <span className='font-semibold text-xl'>지역 목록</span>
-            <ScrollArea className='p-3 border rounded h-96'>
-                <section className='flex flex-wrap gap-2'>
-                    {searchedLocations.length === 0 ? (
-                        <span>검색 결과가 없습니다.</span>
-                    ) : (
-                        searchedLocations.map(
+        <ScrollArea className='h-full'>
+            <section className='flex flex-col flex-1 gap-5 mb-12'>
+                <Separator />
+                <span className='font-semibold text-xl'>검색</span>
+                <Input placeholder='지역명을 입력하세요' value={value} onChange={(e) => setValue(e.target.value)} />
+                <Separator />
+                <span className='font-semibold text-xl'>지역 목록</span>
+                <ScrollArea className='p-3 border rounded h-96'>
+                    <section className='flex flex-wrap gap-2'>
+                        {searchedLocations.length === 0 ? (
+                            <span>검색 결과가 없습니다.</span>
+                        ) : (
+                            searchedLocations.map(
+                                (location) =>
+                                    !subscribed.includes(String(location.location_id)) && (
+                                        <Button
+                                            onClick={() => manageSubscribe(location.location_id)}
+                                            className='w-fit'
+                                            variant={subscribed.includes(String(location.location_id)) ? 'default' : 'outline'}
+                                            key={location.location_id}
+                                        >{`${location.province} ${location.city} ${location.town}`}</Button>
+                                    ),
+                            )
+                        )}
+                    </section>
+                </ScrollArea>
+                <Separator />
+                <span className='font-semibold text-xl'>현재 구독한 지역</span>
+                <ScrollArea className='p-3 border rounded h-52'>
+                    <section className='flex flex-wrap gap-2'>
+                        {Locations.map(
                             (location) =>
-                                !subscribed.includes(String(location.location_id)) && (
+                                subscribed.includes(String(location.location_id)) && (
                                     <Button
                                         onClick={() => manageSubscribe(location.location_id)}
                                         className='w-fit'
@@ -83,28 +102,11 @@ const LocationSelector = ({ vapidKey }: { vapidKey: string }) => {
                                         key={location.location_id}
                                     >{`${location.province} ${location.city} ${location.town}`}</Button>
                                 ),
-                        )
-                    )}
-                </section>
-            </ScrollArea>
-            <Separator />
-            <span className='font-semibold text-xl'>현재 구독한 지역</span>
-            <ScrollArea className='p-3 border rounded h-52'>
-                <section className='flex flex-wrap gap-2'>
-                    {Locations.map(
-                        (location) =>
-                            subscribed.includes(String(location.location_id)) && (
-                                <Button
-                                    onClick={() => manageSubscribe(location.location_id)}
-                                    className='w-fit'
-                                    variant={subscribed.includes(String(location.location_id)) ? 'default' : 'outline'}
-                                    key={location.location_id}
-                                >{`${location.province} ${location.city} ${location.town}`}</Button>
-                            ),
-                    )}
-                </section>
-            </ScrollArea>
-        </section>
+                        )}
+                    </section>
+                </ScrollArea>
+            </section>
+        </ScrollArea>
     )
 }
 

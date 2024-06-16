@@ -16,7 +16,7 @@ const ListAccordian = ({ list }: { list: DisasterMessage[] }) => {
                                     </Badge>
                                     <section className='text-nowrap text-xs'>{dayjs(item.create_date).format('YY/MM/DD - hh:mm:ss')}</section>
                                 </section>
-                                <section className='line-clamp-1 text-start'>{item.msg.split('vo.la')[0]}</section>
+                                <section className='line-clamp-1 text-start'>{item.msg.split('vo.la')[0].replaceAll(',', ', ')}</section>
                             </section>
                         </AccordionTrigger>
                         <AccordionContent className='px-3'>
@@ -28,7 +28,7 @@ const ListAccordian = ({ list }: { list: DisasterMessage[] }) => {
                                         </Badge>
                                     ))}
                                 </section>
-                                {item.msg.split('vo.la/')[0]}
+                                {item.msg.split('vo.la/')[0].replaceAll(',', ', ')}
                                 <br />
                                 <sub className='opacity-75'>{`${item.msg.split('vo.la/')[1] ? 'vo.la / ' + item.msg.split('vo.la/')[1] : ''}`}</sub>
                             </section>
