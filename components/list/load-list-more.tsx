@@ -18,7 +18,7 @@ const LoadListMore = () => {
     }
 
     useEffect(() => {
-        window.scrollTo(0, document.body.scrollHeight)
+        list?.length > 0 && window.scrollTo(0, document.body.scrollHeight)
     }, [list])
 
     return (
