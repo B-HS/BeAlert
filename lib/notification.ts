@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { AlertApi } from './alert-api'
 import { getToken, messaging, onMessage, unsubscribeFromFCM } from './firebase'
 
 const useFCM = (vapidKey: string) => {
+    const retryLoadToken = useRef(0)
     const alertApi = new AlertApi()
     const requestPermission = async () => {
         if (!('Notification' in window)) {
@@ -32,9 +33,15 @@ const useFCM = (vapidKey: string) => {
                     }
 
                     localStorage.setItem('fcm_token', currentToken)
+                    window.location.reload()
                 })
         } catch (error) {
-            console.log('Error during subscription:', error)
+            if (retryLoadToken.current < 3) {
+                console.log('retry to load token')
+                requestPermission()
+            } else {
+                console.log('Error during subscription:', error)
+            }
         }
     }
 
@@ -56,6 +63,7 @@ const useFCM = (vapidKey: string) => {
             } else {
                 console.log('No push subscription found')
             }
+            window.location.reload()
 
             return subscription
         } catch (error) {
