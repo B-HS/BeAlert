@@ -1,3 +1,4 @@
+import SiteHeader from '@/components/header/header'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import { cn } from '@/lib/utils'
 import type { Metadata } from 'next'
@@ -7,7 +8,6 @@ import { ReactNode } from 'react'
 import './globals.css'
 
 const GoToTop = dynamic(() => import('@/components/go-top-top'), { ssr: false })
-const SiteHeader = dynamic(() => import('@/components/header/header'), { ssr: false })
 const fontRound = M_PLUS_Rounded_1c({
     subsets: ['latin'],
     variable: '--font-mplus',
@@ -23,10 +23,10 @@ const Layout = async ({ children }: { children: ReactNode }) => {
     const vapidKey = process.env.APP_VAPIDKEY || ''
     return (
         <html lang='ko' suppressHydrationWarning>
-            <body className={cn('container p-0 max-w-screen-2xl h-dvh bg-background font-mplus antialiased flex flex-col', fontRound.variable)}>
+            <body className={cn('max-w-screen-2xl h-dvh font-mplus antialiased', fontRound.variable)}>
                 <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
                     <SiteHeader vapidKey={vapidKey} />
-                    <section className='flex flex-col flex-1 min-w-[350px] size-full'>
+                    <section className='flex flex-col flex-1 min-w-[300px] size-full'>
                         <GoToTop />
                         {children}
                     </section>

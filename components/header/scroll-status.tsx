@@ -6,7 +6,7 @@ const ScrollStatus = () => {
 
     const handleScroll = () => {
         const windowHeight = window.innerHeight
-        const documentHeight = document.body.clientHeight
+        const documentHeight = document.documentElement.scrollHeight
         const scrollableHeight = documentHeight - windowHeight
         const currentScrollPosition = window.scrollY
         const calculatedScrollPercentage = (currentScrollPosition / scrollableHeight) * 100
@@ -23,7 +23,10 @@ const ScrollStatus = () => {
 
     return (
         <section className='relative w-full'>
-            <section className='top-0 z-[52] absolute bg-neutral-700 dark:bg-neutral-300 h-0.5' style={{ width: `${scrollPercentage}%` }} />
+            <section
+                className='top-0 z-[52] absolute bg-neutral-700 dark:bg-neutral-300 h-0.5 transition-all duration-75 ease-linear'
+                style={{ width: `${scrollPercentage}%` }}
+            />
         </section>
     )
 }

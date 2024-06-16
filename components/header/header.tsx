@@ -1,31 +1,18 @@
-'use client'
-import useFCM from '@/lib/notification'
-import { Button } from '../ui/button'
+import dynamic from 'next/dynamic'
+
+const ScrollStatus = dynamic(() => import('./scroll-status'), { ssr: false })
+const SubscribeButtons = dynamic(() => import('./subscribe-buttons'), { ssr: false })
 
 const SiteHeader = ({ vapidKey }: { vapidKey: string }) => {
-    const { requestPermission, requestUnsubscribe, addLocationInfoToIndexedDb } = useFCM(vapidKey)
     return (
-        <header className='flex justify-between p-3 border-b'>
-            <section>
-                <span>BEALRERT</span>
+        <header className='top-0 z-50 sticky backdrop-blur border-b w-full'>
+            <section className='flex justify-between items-center p-3'>
+                <section>
+                    <span>BEALRERT</span>
+                </section>
+                <SubscribeButtons vapidKey={vapidKey} />
             </section>
-            <section>
-                <Button variant={'ghost'} size={'sm'} onClick={requestPermission}>
-                    Subscribe
-                </Button>
-                <Button variant={'ghost'} size={'sm'} onClick={requestUnsubscribe}>
-                    Unsubscribe
-                </Button>
-                <Button
-                    variant={'ghost'}
-                    size={'sm'}
-                    onClick={() => {
-                        addLocationInfoToIndexedDb('마산')
-                    }}
-                >
-                    Add Location
-                </Button>
-            </section>
+            <ScrollStatus />
         </header>
     )
 }

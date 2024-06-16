@@ -12,7 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 
 export function AccordionDemo() {
     return (
-        <Accordion type='single' collapsible className='w-full'>
+        <Accordion type='single' collapsible>
             <AccordionItem value='item-1'>
                 <AccordionTrigger className='px-3'>Is it accessible?</AccordionTrigger>
                 <AccordionContent className='px-3'>Yes. It adheres to the WAI-ARIA design pattern.</AccordionContent>
