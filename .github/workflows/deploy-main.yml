@@ -35,7 +35,13 @@ jobs:
             docker rm bealert-back
             chmod +x build_and_run.sh
             ./build_and_run.sh
-            nohup pnpm start --port 15551 > server.log 2>&1 &
+            nohup pnpm start --port 15551 &
+            sleep 5
+            if ! lsof -i:15551; then
+              echo "Server did not start correctly" >&2
+              cat server.log
+              exit 1
+            fi
           EOF
         env:
           CI: true

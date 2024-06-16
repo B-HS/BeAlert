@@ -28,7 +28,7 @@ const Layout = async ({ children }: { children: ReactNode }) => {
                 <meta name='theme-color' content='#FFF' />
                 <link rel='apple-touch-icon' href='/icons/icon-192x192.png' />
             </head>
-            <body className={cn('max-w-screen-2xl min-h-dvh font-mplus antialiased', fontRound.variable)}>
+            <body className={cn('min-h-dvh font-mplus antialiased', fontRound.variable)}>
                 <ThemeProvider attribute='class' defaultTheme='dark' enableSystem disableTransitionOnChange>
                     <SiteHeader vapidKey={vapidKey} />
                     <section className='flex flex-col flex-1 min-w-[300px] size-full'>
