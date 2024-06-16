@@ -57,10 +57,6 @@ def read_disaster_messages(skip: int = 0, limit: int = 10, db: Session = Depends
         "messageList": messages
     }
 
-@app.post("/adddisastermessage/", response_model=schemas.DisasterMessage)
-def add_disaster_message(message: schemas.DisasterMessageCreate, db: Session = Depends(get_db)):
-    db_message = crud.create_disaster_message(db, message)
-    return db_message
 
 @app.post("/addtoken/", response_model=schemas.Token)
 def add_token(token: schemas.TokenCreate, db: Session = Depends(get_db)):
@@ -76,20 +72,6 @@ def delete_token(token: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Token not found or could not be deleted.")
     return result
 
-@app.get("/sendmsg")
-def sendmsg(msg: str, location_id: str):
-    message = messaging.Message(
-        notification=messaging.Notification(
-            title=msg,
-            body=msg
-        ),
-        topic=location_id 
-    )
-    try:
-        response = messaging.send(message)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")
-    return {"message": "Message sent successfully", "response": response}
 
 @app.post("/addlocation/", response_model=schemas.Location)
 def add_location(location: schemas.LocationCreate, db: Session = Depends(get_db)):
@@ -108,9 +90,6 @@ def add_location(location: schemas.LocationCreate, db: Session = Depends(get_db)
         raise HTTPException(status_code=400, detail="Location could not be created.")
     return db_location
 
-@app.get("/locations/", response_model=List[schemas.Location])
-def read_locations(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    return crud.get_locations(db, skip=skip, limit=limit)
 
 @app.get("/locations/by_token/{token}", response_model=List[schemas.Location])
 def read_locations_by_token(token: str, db: Session = Depends(get_db)):
@@ -125,3 +104,29 @@ def delete_location(location_id: int, db: Session = Depends(get_db)):
     if result.get("message") != "Location deleted successfully":
         raise HTTPException(status_code=404, detail="Location not found or could not be deleted.")
     return result
+
+## UNUSED ENDPOINTS
+
+# @app.post("/adddisastermessage/", response_model=schemas.DisasterMessage)
+# def add_disaster_message(message: schemas.DisasterMessageCreate, db: Session = Depends(get_db)):
+#     db_message = crud.create_disaster_message(db, message)
+#     return db_message
+
+# @app.get("/sendmsg")
+# def sendmsg(msg: str, location_id: str):
+#     message = messaging.Message(
+#         notification=messaging.Notification(
+#             title=msg,
+#             body=msg
+#         ),
+#         topic=location_id 
+#     )
+#     try:
+#         response = messaging.send(message)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")
+#     return {"message": "Message sent successfully", "response": response}
+
+# @app.get("/locations/", response_model=List[schemas.Location])
+# def read_locations(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+#     return crud.get_locations(db, skip=skip, limit=limit)
