@@ -4,8 +4,8 @@
     "description": "BeAlert",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#FFF",
-    "theme_color": "#FFF",
+    "background_color": "#000000",
+    "theme_color": "#000000",
     "icons": [
         {
             "src": "/128.png",
