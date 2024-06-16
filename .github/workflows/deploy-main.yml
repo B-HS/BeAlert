@@ -64,8 +64,7 @@ jobs:
             cd /home/BeAlert
             chmod +x build_and_run.sh
             ./build_and_run.sh
-            nohup pnpm start --port 15551 &
-            disown
+            nohup setsid pnpm start --port 15551 > server.log 2>&1 &
           "
 
       - name: Verify Application is Running
