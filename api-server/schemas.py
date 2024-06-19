@@ -1,11 +1,10 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
-
 class DisasterMessageBase(BaseModel):
     create_date: datetime
-    location_id: str = Field(..., min_length=1, max_length=100)
-    location_name: str = Field(..., min_length=1, max_length=255)
+    location_id: str = Field(..., min_length=1, max_length=5000)
+    location_name: str = Field(..., min_length=1, max_length=10000)
     md101_sn: str = Field(..., min_length=1, max_length=50)
     msg: str = Field(..., min_length=1)
     send_platform: str = Field(..., min_length=1, max_length=50)
