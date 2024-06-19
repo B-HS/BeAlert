@@ -3,6 +3,7 @@ import useFCM from '@/lib/notification'
 import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import SettingSheet from './setting-sheet'
+import Github from './github'
 
 const SubscribeButtons = ({ vapidKey }: { vapidKey: string }) => {
     const { requestPermission, requestUnsubscribe } = useFCM(vapidKey)
@@ -24,7 +25,7 @@ const SubscribeButtons = ({ vapidKey }: { vapidKey: string }) => {
     }
 
     return (
-        <section className='flex items-center gap-2'>
+        <section className='flex items-center gap-3.5'>
             {isSubscribed ? (
                 <Button className='px-0' variant='link' size='sm' onClick={handleUnsubscribe}>
                     구독해지
@@ -40,6 +41,7 @@ const SubscribeButtons = ({ vapidKey }: { vapidKey: string }) => {
                     설정
                 </Button>
             </SettingSheet>
+            <Github />
         </section>
     )
 }

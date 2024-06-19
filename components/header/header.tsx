@@ -1,7 +1,6 @@
 import dynamic from 'next/dynamic'
+import { Button, buttonVariants } from '../ui/button'
 import { Skeleton } from '../ui/skeleton'
-import { buttonVariants } from '../ui/button'
-import Link from 'next/link'
 import Refresh from './refresh'
 
 const ScrollStatus = dynamic(() => import('./scroll-status'), { ssr: false })
@@ -11,6 +10,7 @@ const SubscribeButtons = dynamic(() => import('./subscribe-buttons'), {
         <section className='flex items-center gap-2'>
             <Skeleton className={buttonVariants({ variant: 'link', size: 'sm', className: 'px-0' })} />
             <Skeleton className={buttonVariants({ variant: 'link', size: 'sm', className: 'px-0' })} />
+            <Button variant={'link'} size={'icon'}></Button>
         </section>
     ),
 })
