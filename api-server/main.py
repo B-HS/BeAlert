@@ -115,18 +115,8 @@ def delete_location_by_token_and_location(token: str, location: str, db: Session
 
 # @app.get("/sendmsg")
 # def sendmsg(msg: str, location_id: str):
-#     message = messaging.Message(
-#         notification=messaging.Notification(
-#             title=msg,
-#             body=msg
-#         ),
-#         topic=location_id 
-#     )
-#     try:
-#         response = messaging.send(message)
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Failed to send message: {e}")
-#     return {"message": "Message sent successfully", "response": response}
+#     crud.send_firebase_message(location_id, msg)
+#     return {"message": "Message sent successfully", "response": location_id, "msg": msg}
 
 # @app.get("/locations/", response_model=List[schemas.Location])
 # def read_locations(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):

@@ -3,11 +3,34 @@ from sqlalchemy import desc
 from sqlalchemy.exc import IntegrityError
 import models, schemas
 from firebase_admin import messaging
+import json
+import os
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+LOCATIONS = os.path.join(BASE_DIR, 'locations.json')
+
+with open(LOCATIONS, 'r', encoding='utf-8') as f:
+    locations = json.load(f)
+
+db = locations
+
+def find_location_by_id(location_id):
+    for location in db:
+        if location['location_id'] == int(location_id):
+            return location
+    return None
+
 
 def send_firebase_message(location_id: str, msg: str):
+    location = find_location_by_id(location_id)
+    if location:
+        location_name = f"{location['province']} {location['city']} {location['town']}".strip()
+    else:
+        location_name = location_id    
+
     message = messaging.Message(
         notification=messaging.Notification(
-            title=location_id,
+            title=location_name,
             body=msg
         ),
         topic=location_id

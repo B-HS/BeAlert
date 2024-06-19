@@ -1,18 +1,8 @@
 let locationMap = {};
 
-self.addEventListener("install", (event) => {
+self.addEventListener("install", () => {
     console.log("FCM installing");
-    event.waitUntil(
-        (async () => {
-            self.skipWaiting();
-            const response = await fetch('/locations.json');
-            const locations = await response.json();
-            locationMap = locations.reduce((map, location) => {
-                map[location.location_id.toString()] = `${location.province} ${location.city} ${location.town}`.trim();
-                return map;
-            }, {});
-        })()
-    );
+    self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
