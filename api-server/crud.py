@@ -21,25 +21,32 @@ def find_location_by_id(location_id):
     return None
 
 
-def send_firebase_message(location_id: str, msg: str):
-    location = find_location_by_id(location_id)
-    if location:
-        location_name = f"{location['province']} {location['city']} {location['town']}".strip()
+def send_firebase_message(location_ids: str, msg: str):
+    if ',' in location_ids:
+        location_id_list = location_ids.split(',')
     else:
-        location_name = location_id    
+        location_id_list = [location_ids]
+    
+    for location_id in location_id_list:
+        location_id = location_id.strip()
+        location = find_location_by_id(location_id)
+        if location:
+            location_name = f"{location['province']} {location['city']} {location['town']}".strip()
+        else:
+            location_name = location_id
 
-    message = messaging.Message(
-        notification=messaging.Notification(
-            title=location_name,
-            body=msg
-        ),
-        topic=location_id
-    )
-    try:
-        response = messaging.send(message)
-        print(f"Message sent to topic {location_id}: {response}")
-    except Exception as e:
-        print(f"Failed to send message to topic {location_id}: {e}")
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=location_name,
+                body=msg
+            ),
+            topic=location_id
+        )
+        try:
+            response = messaging.send(message)
+            print(f"Message sent to topic {location_id}: {response}")
+        except Exception as e:
+            print(f"Failed to send message to topic {location_id}: {e}")
 
 def unsubscribe_token_from_locations(token: str, locations: list):
     try:
@@ -85,8 +92,20 @@ def load_disaster_messages_from_gov(db: Session, disaster_messages: list[schemas
                 db.rollback()
                 print(f"Duplicate entry found for md101_sn: {message.md101_sn}, skipping...")
 
+    processed_tokens = set()
+
     for new_message in new_messages:
-        send_firebase_message(new_message.location_id, new_message.msg)
+        location_ids = new_message.location_id.split(',')
+        for location_id in location_ids:
+            location_id = location_id.strip()
+            locations = db.query(models.Location).filter(models.Location.location == location_id).all()
+            for location in locations:
+                if location.token_value not in processed_tokens:
+                    send_firebase_message(location.location, new_message.msg)
+                    processed_tokens.add(location.token_value)
+                else:
+                    print(f" Given token already processed, skipping message for location {location_id}.")
+    return new_messages
 
 def get_token(db: Session, token_id: int):
     return db.query(models.Token).filter(models.Token.id == token_id).first()
