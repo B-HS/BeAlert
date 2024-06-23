@@ -8,7 +8,7 @@ uvicorn main:app --reload
 - [x] cron설정 
 - [x] 토큰서버
 - [x] 지역별 FCM topic생성 및 알람 push
-- [ ] 배포
+- [x] 배포
 
 
 # 데이터
