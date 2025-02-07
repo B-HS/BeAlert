@@ -11,67 +11,71 @@ with open(SECRET_FILE) as f:
 
 GOV_API_URL = secrets["GOV_API"]["URL"]
 
-
-
 def load_locations(filepath='locations.json'):
     with open(filepath, 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def fetch_disaster_messages():
     locations_data = load_locations()
-    response = httpx.get(GOV_API_URL, verify=False)
-    response.raise_for_status()
-    data = response.json()
+    
+    try:
+        response = httpx.get(GOV_API_URL, verify=False)
+        response.raise_for_status()
+        data = response.json()
+    except Exception as e:
+        print(f"Error fetching data from API: {e}")
+        return []
+
     messages = []
-    disaster_msgs = data.get("DisasterMsg", [])
+    disaster_msgs = data.get("body", [])  
 
-    for item in disaster_msgs:
-        rows = item.get("row", [])
-        for row in rows:
-            try:
-                
-                create_date_str = row.get("CRT_DT", "")
-                create_date = datetime.strptime(create_date_str, "%Y/%m/%d %H:%M:%S")
-                raw_regions = row.get("RCPTN_RGN_NM", "")
-                regions = [region.strip() for region in raw_regions.split(",") if region.strip()]
-                location_ids = []
-                
-                for region in regions:
-                    parts = region.split(maxsplit=2)
-                    province = parts[0] if len(parts) > 0 else ""
-                    city = parts[1] if len(parts) > 1 else ""
-                    town = parts[2] if len(parts) > 2 else ""
-                    matched_location = next(
-                        (loc for loc in locations_data if loc["province"] == province and loc["city"] == city and loc["town"] == town),
-                        None
-                    )
+    for row in disaster_msgs:  
+        try:
+            
+            create_date_str = row.get("CRT_DT", "")
+            create_date = datetime.strptime(create_date_str, "%Y/%m/%d %H:%M:%S") if create_date_str else None            
+            raw_regions = row.get("RCPTN_RGN_NM", "")
+            regions = [region.strip() for region in raw_regions.split(",") if region.strip()]
+            location_ids = []
 
-                    if matched_location:
-                        location_ids.append(matched_location["location_id"])
-                    else:
-                        print(f"No match found for region: {region}")
+            for region in regions:
+                parts = region.split(maxsplit=2)
+                province = parts[0] if len(parts) > 0 else ""
+                city = parts[1] if len(parts) > 1 else ""
+                town = parts[2] if len(parts) > 2 else ""
 
-                
-                location_id = location_ids if location_ids else []
-                md101_sn = row.get("SN", "")
-                emrg_step_nm = row.get("EMRG_STEP_NM", "")
-                dst_se_nm = row.get("DST_SE_NM", "")
-                msg_cn = row.get("MSG_CN", "")
-                msg = f"[{emrg_step_nm}][{dst_se_nm}] {msg_cn}"
+                matched_location = next(
+                    (loc for loc in locations_data if 
+                     loc.get("province") == province and 
+                     loc.get("city") == city and 
+                     loc.get("town") == town),
+                    None
+                )
 
-                
-                message = {
-                    "create_date": create_date,
-                    "location_id": location_id,  
-                    "location_name": raw_regions,  
-                    "md101_sn": md101_sn,
-                    "msg": msg,
-                    "send_platform": ""  
-                }
+                if matched_location:
+                    location_ids.append(matched_location["location_id"])
+                else:
+                    print(f"No match found for region: {region}")
 
-                messages.append(message)
+            
+            md101_sn = row.get("SN", "")
+            emrg_step_nm = row.get("EMRG_STEP_NM", "")
+            dst_se_nm = row.get("DST_SE_NM", "")
+            msg_cn = row.get("MSG_CN", "")
+            msg = f"[{emrg_step_nm}][{dst_se_nm}] {msg_cn}"
 
-            except Exception as e:
-                print(f"Error processing row: {row}, Error: {e}")
+            message = {
+                "create_date": create_date,
+                "location_id": location_ids,
+                "location_name": raw_regions,
+                "md101_sn": md101_sn,
+                "msg": msg,
+                "send_platform": ""
+            }
+
+            messages.append(message)
+
+        except Exception as e:
+            print(f"Error processing row: {row}, Error: {e}")
 
     return messages
