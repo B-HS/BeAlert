@@ -1,6 +1,10 @@
-(현재 수리 중)
-- 행안부의 API 최신화에 따라 백엔드 로직 최신화 필요
-- https://www.data.go.kr/data/15134001/openapi.do
+# (현재 수리 중)
+- ~행안부의 API 최신화에 따라 백엔드 로직 최신화 필요~
+- ~https://www.data.go.kr/data/15134001/openapi.do~
+- API request param 정보부족으로 현재 사용불가
+  - 최신정보를 항상 긁을 수 있도록 해야하는데 그게 불가능한 상황
+  - 문의로 order 설정이나 하다못해 total page값이라도 리턴해달라는 요청을 넣긴 함
+  - 문의 답변 올때까지 프로젝트 중지 (2025. 02. 07)
 
 # Be Alert
 - 재난경보 PWA앱
