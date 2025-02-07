@@ -3,6 +3,9 @@ import json
 import os
 from datetime import datetime
 
+
+import json
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 SECRET_FILE = os.path.join(BASE_DIR, 'secrets.json')
 
@@ -46,9 +49,9 @@ def fetch_disaster_messages():
 
                 matched_location = next(
                     (loc for loc in locations_data if 
-                     loc.get("province") == province and 
-                     loc.get("city") == city and 
-                     loc.get("town") == town),
+                     loc.get("province") == province.replace('전체', '') and 
+                     loc.get("city") == city.replace('전체', '') and 
+                     loc.get("town") == town.replace('전체', '')),
                     None
                 )
 
@@ -63,14 +66,16 @@ def fetch_disaster_messages():
             dst_se_nm = row.get("DST_SE_NM", "")
             msg_cn = row.get("MSG_CN", "")
             msg = f"[{emrg_step_nm}][{dst_se_nm}] {msg_cn}"
+            
+            
 
             message = {
                 "create_date": create_date,
-                "location_id": location_ids,
+                "location_id": ','.join(map(str, location_ids)),
                 "location_name": raw_regions,
                 "md101_sn": md101_sn,
                 "msg": msg,
-                "send_platform": ""
+                "send_platform": "GOV"
             }
 
             messages.append(message)
