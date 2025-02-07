@@ -11,35 +11,67 @@ with open(SECRET_FILE) as f:
 
 GOV_API_URL = secrets["GOV_API"]["URL"]
 
-ERROR_CODE_MAP = {
-    290: "인증키가 유효하지 않습니다. 인증키가 없는 경우 홈페이지에서 인증키를 신청하십시오.",
-    310: "해당하는 서비스를 찾을 수 없습니다. 요청인자 중 SERVICE를 확인하십시오.",
-    333: "요청위치 값의 타입이 유효하지 않습니다. 요청위치 값은 정수를 입력하세요.",
-    336: "데이터 요청은 한번에 최대 1,000건을 넘을 수 없습니다.",
-    337: "일별 트래픽 제한을 넘은 호출입니다. 오늘은 더이상 호출할 수 없습니다.",
-    500: "서버 오류입니다. 지속적으로 발생시 홈페이지로 문의(Q&A) 바랍니다.",
-    600: "데이터베이스 연결 오류입니다. 지속적으로 발생시 홈페이지로 문의(Q&A) 바랍니다.",
-    601: "SQL 문장 오류입니다. 지속적으로 발생시 홈페이지로 문의(Q&A) 바랍니다.",
-    0: "정상 처리되었습니다.",
-    300: "관리자에 의해 인증키 사용이 제한되었습니다.",
-    200: "해당하는 데이터가 없습니다."
-}
+
+
+def load_locations(filepath='locations.json'):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 def fetch_disaster_messages():
-    response = httpx.get(GOV_API_URL, verify=False)  
-    response.raise_for_status()  
+    locations_data = load_locations()
+    response = httpx.get(GOV_API_URL, verify=False)
+    response.raise_for_status()
     data = response.json()
-
-    error_code = data.get("errorCode")
-    if error_code in ERROR_CODE_MAP:
-        if error_code != 0:
-            raise ValueError(ERROR_CODE_MAP[error_code])
-
     messages = []
     disaster_msgs = data.get("DisasterMsg", [])
+
     for item in disaster_msgs:
         rows = item.get("row", [])
         for row in rows:
-            row["create_date"] = datetime.strptime(row["create_date"], "%Y/%m/%d %H:%M:%S")
-            messages.append(row)
+            try:
+                
+                create_date_str = row.get("CRT_DT", "")
+                create_date = datetime.strptime(create_date_str, "%Y/%m/%d %H:%M:%S")
+                raw_regions = row.get("RCPTN_RGN_NM", "")
+                regions = [region.strip() for region in raw_regions.split(",") if region.strip()]
+                location_ids = []
+                
+                for region in regions:
+                    parts = region.split(maxsplit=2)
+                    province = parts[0] if len(parts) > 0 else ""
+                    city = parts[1] if len(parts) > 1 else ""
+                    town = parts[2] if len(parts) > 2 else ""
+                    matched_location = next(
+                        (loc for loc in locations_data if loc["province"] == province and loc["city"] == city and loc["town"] == town),
+                        None
+                    )
+
+                    if matched_location:
+                        location_ids.append(matched_location["location_id"])
+                    else:
+                        print(f"No match found for region: {region}")
+
+                
+                location_id = location_ids if location_ids else []
+                md101_sn = row.get("SN", "")
+                emrg_step_nm = row.get("EMRG_STEP_NM", "")
+                dst_se_nm = row.get("DST_SE_NM", "")
+                msg_cn = row.get("MSG_CN", "")
+                msg = f"[{emrg_step_nm}][{dst_se_nm}] {msg_cn}"
+
+                
+                message = {
+                    "create_date": create_date,
+                    "location_id": location_id,  
+                    "location_name": raw_regions,  
+                    "md101_sn": md101_sn,
+                    "msg": msg,
+                    "send_platform": ""  
+                }
+
+                messages.append(message)
+
+            except Exception as e:
+                print(f"Error processing row: {row}, Error: {e}")
+
     return messages

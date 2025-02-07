@@ -24,9 +24,9 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     load_disaster_messages,
-    trigger=IntervalTrigger(seconds=10),
+    trigger=IntervalTrigger(seconds=90),
     id='load_disaster_messages_job',
-    name='Load disaster messages every 10 seconds',
+    name='Load disaster messages every 90 seconds',
     replace_existing=True
 )
 
