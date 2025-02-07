@@ -3,9 +3,6 @@ import json
 import os
 from datetime import datetime
 
-
-import json
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 SECRET_FILE = os.path.join(BASE_DIR, 'secrets.json')
 
@@ -34,7 +31,6 @@ def fetch_disaster_messages():
 
     for row in disaster_msgs:  
         try:
-            
             create_date_str = row.get("CRT_DT", "")
             create_date = datetime.strptime(create_date_str, "%Y/%m/%d %H:%M:%S") if create_date_str else None            
             raw_regions = row.get("RCPTN_RGN_NM", "")
@@ -42,16 +38,24 @@ def fetch_disaster_messages():
             location_ids = []
 
             for region in regions:
-                parts = region.split(maxsplit=2)
+                parts = region.split()
                 province = parts[0] if len(parts) > 0 else ""
-                city = parts[1] if len(parts) > 1 else ""
-                town = parts[2] if len(parts) > 2 else ""
+                city = ""
+                town = ""
+
+                if len(parts) >= 3:
+                    city = " ".join(parts[1:-1])
+                    town = parts[-1]
+                elif len(parts) == 2:
+                    city = parts[1]
+                elif len(parts) == 1:
+                    province = parts[0]
 
                 matched_location = next(
                     (loc for loc in locations_data if 
-                     loc.get("province") == province.replace('전체', '') and 
-                     loc.get("city") == city.replace('전체', '') and 
-                     loc.get("town") == town.replace('전체', '')),
+                     loc.get("province") == province.replace('전체', '').strip() and 
+                     loc.get("city") == city.replace('전체', '').strip() and 
+                     loc.get("town") == town.replace('전체', '').strip()),
                     None
                 )
 
@@ -60,14 +64,11 @@ def fetch_disaster_messages():
                 else:
                     print(f"No match found for region: {region}")
 
-            
             md101_sn = row.get("SN", "")
             emrg_step_nm = row.get("EMRG_STEP_NM", "")
             dst_se_nm = row.get("DST_SE_NM", "")
             msg_cn = row.get("MSG_CN", "")
             msg = f"[{emrg_step_nm}][{dst_se_nm}] {msg_cn}"
-            
-            
 
             message = {
                 "create_date": create_date,
