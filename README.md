@@ -1,4 +1,4 @@
-# (현재 수리 중)
+# 2025. Q2부터 시작 예정
 - ~행안부의 API 최신화에 따라 백엔드 로직 최신화 필요~
 - ~https://www.data.go.kr/data/15134001/openapi.do~
 - API request param 정보부족으로 현재 사용불가
