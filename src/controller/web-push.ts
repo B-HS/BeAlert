@@ -17,7 +17,6 @@ export const WebpushRouter = (app: Hono) => {
 
     app.post('/location', async (c) => {
         const { location, p256dh } = await c.req.json()
-        console.log(location, p256dh)
         const { code, message } = await postLocation(location, p256dh)
         return c.json({ message, code })
     })

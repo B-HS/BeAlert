@@ -2,7 +2,7 @@ import { getCurrentIntervals, startCronjob, stopCronjob } from '@src/cron'
 import { Hono } from 'hono'
 
 const SECOND = 1000
-const MINUTE = 60 * SECOND
+
 
 export const CronController = (app: Hono) => {
     app.get('/start-currency-cron', async (c) => {
@@ -19,5 +19,5 @@ export const CronController = (app: Hono) => {
         return c.json(getCurrentIntervals())
     })
 
-    startCronjob({ alerts: 30000 })
+    startCronjob({ alerts: SECOND * 90 })
 }

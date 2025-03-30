@@ -69,7 +69,6 @@ export const sendWebPushNotification = async () => {
 
     const alertData = await fetch(url).then((res) => res.json() as Promise<AlertData>)
 
-    console.log(alertData)
 
     const paginationData = {
         pageSize: alertData.numOfRows || 30,
@@ -82,6 +81,8 @@ export const sendWebPushNotification = async () => {
         page: lastPageNo,
         ...paginationData,
     })
+
+    console.log('[Bealert] Latest alert pagination info', lastPageNo, alertData.totalCount)
 
     const alerts = alertData.body || []
 
