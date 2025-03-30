@@ -1,3 +1,7 @@
+### (구버전은 다음 링크로)
+- https://github.com/B-HS/BeAlert/tree/main
+- https://alert.hyns.dev
+
 # Be Alert
 - v2로 다시돌왔다!
 - 어차피 나만 쓸텐데.. FCM 없이 쌩짜로 sw + web-push로 구현해보자!
