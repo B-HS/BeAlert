@@ -8,12 +8,12 @@ export const InitializeMiddleware = async (app: Hono) => {
     app.use('/hmr.js', serveStatic({ path: './src/static/hmr.js' }))
     app.use('/webpush-subscribe.js', serveStatic({ path: './src/static/webpush-subscribe.js' }))
     app.use('/subscribe-panel.js', serveStatic({ path: './src/static/subscribe-panel.js' }))
-    
-    
+    app.use('/128.png', serveStatic({ path: './src/static/128.png' }))
+    app.use('/512.png', serveStatic({ path: './src/static/512.png' }))
+    app.use('/manifest.json', serveStatic({ path: './src/static/manifest.json' }))
     app.use('*', compress())
-    // Cache-Control header 설정
-    // app.use('*', async (c, next) => {
-    //     c.header('Cache-Control', 'public, max-age=31536000, immutable')
-    //     await next()
-    // })
+    app.use('*', async (c, next) => {
+        c.header('Cache-Control', 'public, max-age=60')
+        await next()
+    })
 }

@@ -8,6 +8,7 @@ export const Layout: FC = (props) => html`
             <title>BeAlert</title>
             <link rel="stylesheet" href="/output.css" />
             <link rel="icon" href="https://blog.gumyo.net/favicon.ico" type="image/x-icon" sizes="64x64" />
+            <link rel="manifest" href="/manifest.json" />
             <meta name="description" content="재난 문자 PWA 어플리케이션" />
             <meta name="author" content="B-HS" />
             <meta name="keywords" content="alert data, 재난 데이터, 재난 문자" />
