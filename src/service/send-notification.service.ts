@@ -1,325 +1,8 @@
 import { db } from '@src/db'
-import { alertMessages, subscriberLocation, subscriptions } from '@src/db/schema'
+import { alertMessages, latestAlertMessageInfo, subscriberLocation, subscriptions } from '@src/db/schema'
 import { AlertData } from '@src/types'
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import webpush = require('web-push')
-
-// webpush.setVapidDetails('mailto:hs@gumyo.net', process.env.VAPID_PUBLIC_KEY!, process.env.VAPID_PRIVATE_KEY!)
-
-const exampleData = {
-    header: {
-        resultMsg: 'NORMAL SERVICE',
-        resultCode: '00',
-        errorMsg: null,
-    },
-    numOfRows: 30,
-    pageNo: 10,
-    totalCount: 27801,
-    body: [
-        {
-            MSG_CN: '[서천군] 현재 많은 비가 내리고 있으니 가급적 외출을 자제하시고 특히 붕괴 위험지역, 산사태, 침수 취약지역 주민들께서는 안전에 유의하시기 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 서천군 ',
-            CRT_DT: '2023/09/20 18:51:41',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205487,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[한국수자원공사] 9월 21일 10시부터 주암댐 초당 200톤 이내 수문방류로 하류지역 하천수위 상승 예상. 하천주변에 계신 경우 안전한 곳으로 대피 바랍니다.',
-            RCPTN_RGN_NM: '경상남도 하동군 ,전라남도 곡성군 ,전라남>도 광양시 ,전라남도 구례군 ,전라남도 순천시 ',
-            CRT_DT: '2023/09/20 18:57:08',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205488,
-            DST_SE_NM: '기타',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[논산시] 가야곡면 야촌리 493-1>번지(노래골삼거리) 도로 침수로 차량 통제하오니, 도로 이용하시는 분들은 우회하여 주시기 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 논산시 ',
-            CRT_DT: '2023/09/20 18:57:39',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205489,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[세종시청] 호우경보, 산사태 주의보 발령 ▲퇴근길 안전유의 ▲입산금지 ▲위험지역 접근금지. 안전사고에 유의하시기 바랍니다.',
-            RCPTN_RGN_NM: '세종특별자치시  ',
-            CRT_DT: '2023/09/20 18:58:52',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205490,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[부여군] 현재 은산천 (은산리, 홍산리, 신대리) 수위 상승 중입니다. 인근 주민들께서는 고지대 등 안전한 곳으로 대피하여 주시기 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 부여군 ',
-            CRT_DT: '2023/09/20 19:05:30',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205491,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[천안시] 오늘 천안시에 많은 비로 산사태 주의보 발령, 산림 주변 야외활동 자제와 입산금지 등 안전에 유의하시기 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 천안시 동남구 ,충청남도 천안시 서북구 ',
-            CRT_DT: '2023/09/20 19:08:22',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205492,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[공주시]우성면 상서리 181-5번지 일원(상서리지하차도) 도로 침수로 차량 통제하오니, 도로 이용하시는 분들은 우회하여 주시기 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 공주시 ',
-            CRT_DT: '2023/09/20 19:11:02',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205493,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[북구] 금일 울산지역 많은 비가 예상되오니 하천변 등 위험지역 출입을 삼가하고, 속심이보, 재전보, 상안, 시례잠수교 등 통제 중이오니 우회하시기 바랍니다.',
-            RCPTN_RGN_NM: '울산광역시 북구 ',
-            CRT_DT: '2023/09/20 19:14:46',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205494,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 19시10분 충북(옥천,보은,청주) 호우경보, 산사태ㆍ상습침수 등 위험지역 대피, 외출자제 등 안전에 주의바랍니다',
-            RCPTN_RGN_NM: '충청북도 보은군 ,충청북도 옥천군 ,충청북도 청주시 ',
-            CRT_DT: '2023/09/20 19:15:56',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205495,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 19시10분 호우주의보 발효. 대중교통을 이용하시고 빗길 안전에 주의하시기 바랍니다.',
-            RCPTN_RGN_NM:
-                '경상북도 경주시 ,경상북도 구미시 ,대구광역시 군위군 ,경상북도 문경시 ,경상북도 상주시 ,경상북도 영천시 ,경상북도 울릉군 ,경상북도 포>항시 ',
-            CRT_DT: '2023/09/20 19:16:03',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205496,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[청주시] 오늘 19시10분 청주지역 호우경보 발효. 저지대, 침수 우려지역 >등 위험지역에서는 가족, 이웃과 정보를 공유하고 안전한 곳으로 대피하시기 바랍니다.',
-            RCPTN_RGN_NM: '충청북도 청주시 상당구 ,충청북도 청주시 서원구 ,충청북도 청주시 흥덕구 ,충청북도 청주시 청원구 ',
-            CRT_DT: '2023/09/20 19:20:28',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205497,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[산림청] 내일까지 많은 비가 예보되어 산사태 발생이 우려되므로 산림 주변 야외활동 자제와 대피명령 시 마을회관, 학교 등 안전한 곳으로 대피하시기 바랍니다.',
-            RCPTN_RGN_NM: '대전광역시 전체 ,세종특별자치시  ',
-            CRT_DT: '2023/09/20 19:20:58',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205498,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 19시15분 전북(익산) 호우주의보 발효. 대중교통을 이용하시고 빗길 안전에 주의하시기 바랍니다.',
-            RCPTN_RGN_NM: '전라북도 익산시 ',
-            CRT_DT: '2023/09/20 19:21:56',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205500,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[청양군] 청양군 전 지역 많은 비로 인해 산사태 발생이 우려되므로 산림주변 산사태 위험 징후가 보이면, 즉시 안전한 곳으로 대피 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 청양군 ',
-            CRT_DT: '2023/09/20 19:21:40',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205499,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[아산시] 많은 비가 내리고 있습니다. 하>천변 산책로와 주차장, 농수로, 산사태 위험지역, 침수위험 저지대와 반지하 건축물에 접근 금지 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 아산시 ',
-            CRT_DT: '2023/09/20 19:25:17',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205501,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[평창군] 오늘 많은 비가 내리고 있습니다. 하천변 산책로, 계곡, 급경사지 등 위험지역은 출입을 금지하여 주시고 안전사고에 유의하여 주시기 바랍니다.',
-            RCPTN_RGN_NM: '강원특별자치도 평창군 ',
-            CRT_DT: '2023/09/20 19:34:28',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205504,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 19시30분 강원(강릉평지,동해평지,삼척평>지) 호우주의보 발효. 대중교통을 이용하시고 빗길 안전에 주의하시기 바랍니다.',
-            RCPTN_RGN_NM: '강원특별자치도 강릉시 ,강원특별자치도 동해시 ,강원특별자치도 삼척시 ',
-            CRT_DT: '2023/09/20 19:34:13',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205503,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 19시30분 대전 호우경보, 산사태ㆍ상습침수 등 위험지역 대피, 외출자제 등 안전에 주의바랍니다',
-            RCPTN_RGN_NM: '대전광역시 전체 ',
-            CRT_DT: '2023/09/20 19:34:06',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205502,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[청양군] 국도29호(비봉면 사점리 황룡각 인근) 차량 전면 통제를 해제하여, 양방향 통행이 가능합니다.',
-            RCPTN_RGN_NM: '충청남도 청양군 ',
-            CRT_DT: '2023/09/20 19:34:31',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205505,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[상주시청] 오늘 19:41 상주시 전지역 산사태 주의보 발령. 산림주변 야외활동 자제와 입산금지 등 안전에 유의하시기 바랍니다.',
-            RCPTN_RGN_NM: '경상북도 상주시 ',
-            CRT_DT: '2023/09/20 20:10:53',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205526,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[군위군청]19시10분 군위군 호우주의보 발표. 새벽녘 많은 비가 예상되오니 외출자제 하시고 특히 하천변, 산사태 등 위험지역 출입금지 안전에 유의하시기 바랍니다',
-            RCPTN_RGN_NM: '대구광역시 군위군 ',
-            CRT_DT: '2023/09/20 20:11:54',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205527,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[금강홍수통제소]오늘 20:20 무한천 예산군(예산대교) 홍수주의보 발령, 방송 등을 통해 홍수상황을 확인하시고, 하천변 이용을 자제하시기 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 당진시 ,충청남도 아산시 ,충청남도 예산군 ',
-            CRT_DT: '2023/09/20 20:15:22',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205528,
-            DST_SE_NM: '홍수',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 20시10분 경남(밀양,남해),경북(영주,예천,봉화평지) 호우주의보 발효. 대중교통을 이용하시고 빗길 안전에 주의하시기 바랍니>다.',
-            RCPTN_RGN_NM: '경상남도 남해군 ,경상남도 밀양시 ,경상북도 봉화군 ,경상북도 영주시 ,경상북도 예천군 ',
-            CRT_DT: '2023/09/20 20:17:16',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205529,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[상주시]호우주의보가 발효되고 많은 비가 올거라는 예보입니다. 산사태, 세월교 등 위험지역 접근금지, 외출자제, 위험징후가 있을 경우 안전한 장소로 대피 바랍니다',
-            RCPTN_RGN_NM: '경상북도 상주시 ',
-            CRT_DT: '2023/09/20 20:18:59',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205530,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[공주시] 오늘 공주시 지역 많은 비로 산사태 경보 발령. 산림 주변 위험지역 통행 금지 및 대피명령 있을 시 즉시 마을회관, 학교 등 안전지대로 대피 바랍니다.',
-            RCPTN_RGN_NM: '충청남도 공주시 ',
-            CRT_DT: '2023/09/20 20:26:03',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205531,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[남해군]현재 호우,강풍주의보 발표. 위험지역 출입금지, 논밭 물꼬정비 및 해안가 낚시금지 등 안전에 유의. 침수,산사태 위험 징후시 안전한 곳으로 대피바랍니다.',
-            RCPTN_RGN_NM: '경상남도 남해군 ',
-            CRT_DT: '2023/09/20 20:26:33',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205532,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[동구] 9.20. 19:40 호우경보 발효에 따라 초량제1,2지하차도, 부산진시장 지하차도를통제하였으니, 주변 도로 이용차량은 우회하시기 바랍니다.',
-            RCPTN_RGN_NM: '부산광역시 동구 ',
-            CRT_DT: '2023/09/20 20:27:03',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205533,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[옥천군] 오늘 옥천군 지역 많은 비로 산사태 주의보 발령. 산림 주변 위험지역 통행 금지 및 대피명령 있을 시 대피장소나 안전지대로 반드시 대피 바랍니다.',
-            RCPTN_RGN_NM: '충청북도 옥천군 ',
-            CRT_DT: '2023/09/20 20:28:45',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205535,
-            DST_SE_NM: '산사태',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[금강홍수통제소]오늘 20:30 갑천 대전시(만년교) 홍수주의보 발령, 방송 등을 통해 홍수상황을 확인하시고, 하천변 이용을 자제하시기 바랍니다.',
-            RCPTN_RGN_NM:
-                '대전광역시 대덕구 ,대전광역시 동구 ,대전광역시 서구 ,대전광역시 유성구 ,대전광역시 중구 ,충청남도 공주시 ,충청북도 청주시 ,세종특별자치시  ',
-            CRT_DT: '2023/09/20 20:28:30',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205534,
-            DST_SE_NM: '홍수',
-            MDFCN_YMD: '2023-09-20',
-        },
-        {
-            MSG_CN: '[행정안전부] 오늘 20시25분 경북(영양평지,안동,경북북동산지) 호우주의보 발효. 대중교통을 이용하시고 빗길 안전에 주의하시기 바랍니다.',
-            RCPTN_RGN_NM: '경상북도 봉화군 ,경상북도 안동시 ,경상북도 영양군 ,경상북도 울진군 ',
-            CRT_DT: '2023/09/20 20:30:48',
-            REG_YMD: '2023-09-20',
-            EMRG_STEP_NM: '안전안내',
-            SN: 205536,
-            DST_SE_NM: '호우',
-            MDFCN_YMD: '2023-09-20',
-        },
-    ],
-}
 
 export type NotificationPayload = {
     title: string
@@ -373,21 +56,37 @@ const parseLocations = (rcptnRgnNm: string): string[] => {
     return Array.from(locationsSet)
 }
 
-// 메인 함수: 웹 푸시 알림 발송
+const getLastPageNo = (totalCount: number, limit: number) => Math.ceil(totalCount / limit)
+
 export const sendWebPushNotification = async () => {
-    // 예시: 구독자에게 알림을 보낼 때 사용할 로직 (실제 전송 대신 콘솔 로그)
-    console.log('sendWebPushNotification 시작')
+    const latestPaginationData = await db.select().from(latestAlertMessageInfo).orderBy(desc(latestAlertMessageInfo.createdAt)).limit(1)
 
-    // 1. 알림 데이터 요청
-    // const alertData = await fetch('...').then((res) => res.json() as Promise<AlertData>)
+    const query = new URLSearchParams()
+    query.append('serviceKey', process.env.SERVICE_KEY || '')
+    query.append('pageNo', latestPaginationData[0]?.page.toString() || '1')
+    query.append('numOfRows', latestPaginationData[0]?.pageSize.toString() || '30')
+    const url = `https://www.safetydata.go.kr/V2/api/DSSP-IF-00247?${query.toString()}`
 
-    const alerts = exampleData.body
+    const alertData = await fetch(url).then((res) => res.json() as Promise<AlertData>)
 
-    // 2. 알림 데이터를 alertMessages 테이블에 저장 (sn 기준으로 중복 검사)
-    // newAlerts에 새로 삽입된 alert 만 저장
+    console.log(alertData)
+
+    const paginationData = {
+        pageSize: alertData.numOfRows || 30,
+        totalCount: alertData.totalCount || 1,
+    }
+
+    const lastPageNo = getLastPageNo(paginationData.totalCount, paginationData.pageSize)
+
+    await db.insert(latestAlertMessageInfo).values({
+        page: lastPageNo,
+        ...paginationData,
+    })
+
+    const alerts = alertData.body || []
+
     const newAlerts: AlertData['body'] = []
     for (const alert of alerts) {
-        // 이미 해당 SN이 있는지 체크 (존재하면 pass)
         const exists = await db.select().from(alertMessages).where(eq(alertMessages.sn, alert.SN))
         if (exists.length === 0) {
             await db.insert(alertMessages).values({
@@ -404,19 +103,15 @@ export const sendWebPushNotification = async () => {
         }
     }
 
-    // 3. newAlerts에 대해 RCPTN_RGN_NM을 잘게 쪼개서 locations 필드 추가 (중복 제거)
     const alertsWithLocations = newAlerts.map((alert) => {
         const locations = parseLocations(alert.RCPTN_RGN_NM)
         return { ...alert, locations }
     })
 
-    // 4. 각 alert에 대해 locations를 기반으로 subscriberLocation에서 구독자 ID 조회
-    //    각 alert은 subscriberIds 배열을 추가하게 됨 (중복 제거)
     const alertsWithSubscribers = [] as typeof alertsWithLocations & { subscriberIds: number[] }[]
     for (const alert of alertsWithLocations) {
         const subscriberIdSet = new Set<number>()
         for (const loc of alert.locations) {
-            // subscriberLocation 테이블에서 location과 정확히 일치하는 항목 조회
             const subs = await db.select().from(subscriberLocation).where(eq(subscriberLocation.location, loc))
             subs.forEach((sub) => subscriberIdSet.add(sub.subscriberId))
         }
@@ -426,16 +121,13 @@ export const sendWebPushNotification = async () => {
         })
     }
 
-    // 5. 각 alert에 대해 subscriberIds 기준으로 subscriptions에서 해당 구독자를 찾아 push 알림 전송
     for (const alert of alertsWithSubscribers) {
-        // 예시로 console.log 로 대체 (실제 구현 시 push 전송 API 호출)
         for (const subscriberId of alert.subscriberIds) {
             const subscription = await db.select().from(subscriptions).where(eq(subscriptions.id, subscriberId))
             if (subscription.length === 0) {
                 console.log('구독자 없음:', subscriberId)
                 continue
             }
-
 
             const result = await sendPush({
                 payload: {

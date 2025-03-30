@@ -1,5 +1,5 @@
-import { bigint, mysqlTable, text, timestamp, varchar } from 'drizzle-orm/mysql-core'
 import { relations } from 'drizzle-orm'
+import { bigint, mysqlTable, text, timestamp, varchar } from 'drizzle-orm/mysql-core'
 
 export const alertMessages = mysqlTable('alert_messages', {
     sn: bigint('sn', { mode: 'number' }).primaryKey().autoincrement(),
@@ -40,3 +40,11 @@ export const subscriberLocationRelations = relations(subscriberLocation, ({ one 
         references: [subscriptions.id],
     }),
 }))
+
+export const latestAlertMessageInfo = mysqlTable('latest_alert_message_info', {
+    id: bigint('id', { mode: 'number' }).primaryKey().autoincrement(),
+    page: bigint('page', { mode: 'number' }).notNull(),
+    pageSize: bigint('page_size', { mode: 'number' }).notNull(),
+    totalCount: bigint('total_count', { mode: 'number' }).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+})

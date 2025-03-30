@@ -15,9 +15,7 @@ self.addEventListener('activate', (event) => {
 })
 self.addEventListener('push', function (event) {
     const data = event.data?.json() ?? {}
-
-    console.log('데이터 왔어요 !!!', data)
-
+    console.log('알림 왔어요 !!!', data)
     event.waitUntil(
         self.registration.showNotification(data.title || '알림', {
             body: data.body || '',

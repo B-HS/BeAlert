@@ -19,5 +19,5 @@ export const CronController = (app: Hono) => {
         return c.json(getCurrentIntervals())
     })
 
-    startCronjob({ alerts: 1000 })
+    startCronjob({ alerts: 30000 })
 }
