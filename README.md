@@ -1,11 +1,9 @@
-To install dependencies:
-```sh
-bun install
-```
+# Be Alert
+- v2로 다시돌왔다!
 
-To run:
-```sh
-bun run dev
-```
-
-open http://localhost:3000
+# 스택
+- Hono
+- Drizzle
+- MySQL
+- PWA
+- Tailwind
