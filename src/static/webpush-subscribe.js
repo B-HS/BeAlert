@@ -97,9 +97,13 @@ const subscribe = async (PUBLIC_KEY) => {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.getAttribute('content')
-
-    await initPushButton(PUBLIC_KEY)
+    try {
+        const PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.getAttribute('content')
+        await initPushButton(PUBLIC_KEY)
+    } catch (error) {
+        console.error('❌ 푸시 알림 초기화 실패:', error)
+        alert('푸시 알림 초기화 중 오류가 발생했습니다.')
+    }
 
     setTimeout(() => {
         new URLSearchParams(window.location.search).forEach((value, key) => {
