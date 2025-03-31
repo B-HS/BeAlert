@@ -12,14 +12,14 @@ const initPushButton = async (PUBLIC_KEY) => {
     if (subscription) {
         window.__p256dh__ = subscription.toJSON().keys.p256dh || 'NOT FOUND'
         if (btn) {
-            btn.innerText = '구독 해지하기'
+            btn.innerText = '구독 해지'
             btn.onclick = async () => {
                 await subscription.unsubscribe()
                 await fetch(`/unsubscribe/${subscription.toJSON().keys.p256dh}`, {
                     method: 'delete',
                 })
                 console.log('❌ 구독 해지됨')
-                btn.innerText = '구독하기'
+                btn.innerText = '구독 하기'
                 btn.onclick = () => subscribe(PUBLIC_KEY)
             }
         }

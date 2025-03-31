@@ -12,22 +12,22 @@ const SubscribePanel: FC<{}> = ({}) => {
     const { city, province, town } = LOCATION_LIST
     const renderLocationButtons = (title: string, items: string[]) => {
         return (
-            <div className='mb-6'>
-                <h2 className='text-xl mb-3'>{title}</h2>
-                <div className='flex flex-wrap gap-2' data-type={'locationlist' + title}>
+            <section class='flex flex-col gap-2'>
+                <h2 className='text-lg'>{title}</h2>
+                <section className='flex flex-wrap gap-2' data-type={'locationlist' + title}>
                     {items.map((item) => (
-                        <button key={item} className={`px-4 py-2 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer`} data-name={item}>
+                        <button key={item} className={`p-2 text-sm bg-secondary/10 cursor-pointer`} data-name={item}>
                             {item}
                         </button>
                     ))}
-                </div>
-            </div>
+                </section>
+            </section>
         )
     }
 
     return (
         <Layout>
-            <div className='max-w-4xl mx-auto p-4'>
+            <div className='p-3 flex flex-col gap-2'>
                 <input id='keyword-input' placeholder='지역 검색' className='w-full px-2 py-1 outline-none border-none' />
                 <hr />
                 <div className='space-y-6'>

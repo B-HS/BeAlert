@@ -1,6 +1,7 @@
 import { db } from '@src/db'
 import { alertMessages, latestAlertMessageInfo, subscriberLocation, subscriptions } from '@src/db/schema'
 import { AlertData } from '@src/types'
+import { getLocationList, parseLocations } from '@src/utils'
 import { desc, eq } from 'drizzle-orm'
 import webpush = require('web-push')
 
@@ -24,11 +25,17 @@ export const sendPush = async ({
         url: '/',
     })
 
+    const isValid = Object.entries(subscriptionsInfo).some(([_, value]) => !value)
+    if (isValid) {
+        console.error('푸시 구독 정보가 유효하지 않습니다:', subscriptionsInfo)
+        return false
+    }
+
     const pushSubscription = {
-        endpoint: subscriptionsInfo.endpoint,
+        endpoint: subscriptionsInfo.endpoint!,
         keys: {
-            p256dh: subscriptionsInfo.p256dh,
-            auth: subscriptionsInfo.auth,
+            p256dh: subscriptionsInfo.p256dh!,
+            auth: subscriptionsInfo.auth!,
         },
     }
 
@@ -42,20 +49,6 @@ export const sendPush = async ({
     }
 }
 
-const parseLocations = (rcptnRgnNm: string): string[] => {
-    const locationsSet = new Set<string>()
-    const parts = rcptnRgnNm.split(',')
-    parts.forEach((part) => {
-        const trimmed = part.trim()
-        if (trimmed) {
-            trimmed.split(/\s+/).forEach((loc) => {
-                if (loc) locationsSet.add(loc)
-            })
-        }
-    })
-    return Array.from(locationsSet)
-}
-
 const getLastPageNo = (totalCount: number, limit: number) => Math.ceil(totalCount / limit)
 
 export const sendWebPushNotification = async () => {
@@ -63,12 +56,11 @@ export const sendWebPushNotification = async () => {
 
     const query = new URLSearchParams()
     query.append('serviceKey', process.env.SERVICE_KEY || '')
-    query.append('pageNo', latestPaginationData[0]?.page.toString() || '1')
-    query.append('numOfRows', latestPaginationData[0]?.pageSize.toString() || '30')
+    query.append('pageNo', latestPaginationData[0]?.page?.toString() || '1')
+    query.append('numOfRows', latestPaginationData[0]?.pageSize?.toString() || '30')
     const url = `https://www.safetydata.go.kr/V2/api/DSSP-IF-00247?${query.toString()}`
 
     const alertData = await fetch(url).then((res) => res.json() as Promise<AlertData>)
-
 
     const paginationData = {
         pageSize: alertData.numOfRows || 30,
@@ -114,7 +106,7 @@ export const sendWebPushNotification = async () => {
         const subscriberIdSet = new Set<number>()
         for (const loc of alert.locations) {
             const subs = await db.select().from(subscriberLocation).where(eq(subscriberLocation.location, loc))
-            subs.forEach((sub) => subscriberIdSet.add(sub.subscriberId))
+            subs.forEach((sub) => sub.subscriberId && subscriberIdSet.add(sub.subscriberId))
         }
         alertsWithSubscribers.push({
             ...alert,
@@ -132,9 +124,8 @@ export const sendWebPushNotification = async () => {
 
             const result = await sendPush({
                 payload: {
-                    title: 'BeAlert',
+                    title: getLocationList(alert.RCPTN_RGN_NM).join(', '),
                     body: alert.MSG_CN,
-                    url: '/alert-histories',
                 },
                 subscriptionsInfo: subscription[0],
             })

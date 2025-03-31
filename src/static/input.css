@@ -1,1 +1,124 @@
 @import 'tailwindcss';
+
+:root {
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(0 0% 0%);
+    --primary: hsl(0 0% 0%);
+    --primary-foreground: hsl(0 0% 100%);
+    --secondary: hsl(0 0% 95%);
+    --secondary-foreground: hsl(0 0% 0%);
+    --border: hsl(0 0% 60%);
+    --radius: 0.5rem;
+}
+
+.dark {
+    --background: hsl(0 0% 0%);
+    --foreground: hsl(0 0% 100%);
+    --primary: hsl(0 0% 100%);
+    --primary-foreground: hsl(0 0% 0%);
+    --secondary: hsl(0 0% 15%);
+    --secondary-foreground: hsl(0 0% 100%);
+    --border: hsl(0 0% 75%);
+}
+
+@theme inline {
+    --color-border: var(--border);
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MPLUSRounded1c';
+    src: url('/font/MPLUSRounded1c-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@theme {
+    --font-mplus: 'MPLUSRounded1c', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@layer base {
+    * {
+        font-family: var(--font-mplus);
+        scrollbar-width: none;
+    }
+}
+
+@keyframes accordion-down {
+    from {
+        height: 0;
+    }
+    to {
+        height: var(--accordion-height);
+    }
+}
+
+@keyframes accordion-up {
+    from {
+        height: var(--accordion-height);
+    }
+    to {
+        height: 0;
+    }
+}
+
+.accordion-down {
+    animation: accordion-down 0.2s ease-out;
+}
+
+.accordion-up {
+    animation: accordion-up 0.2s ease-out;
+}

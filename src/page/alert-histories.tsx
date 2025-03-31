@@ -1,12 +1,15 @@
+import { db } from '@src/db'
+import { alertMessages } from '@src/db/schema'
+import { desc } from 'drizzle-orm'
 import { FC } from 'hono/jsx'
+import { Accordion } from './components/accordion'
 import { Layout } from './components/layout'
 
-const AlertHistories: FC<{}> = ({}) => {
+const AlertHistories: FC<{}> = async ({}) => {
+    const data = await db.select().from(alertMessages).orderBy(desc(alertMessages.sn)).limit(100)
     return (
         <Layout>
-            <button id='subscribeBtn' class='bg-blue-600 text-white p-2 rounded cursor-pointer'>
-                알림 구독하기
-            </button>
+            <Accordion data={data} />
         </Layout>
     )
 }

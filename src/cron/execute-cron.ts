@@ -5,7 +5,6 @@ let intervalMap = {
 }
 let intervalIds: NodeJS.Timer[] = []
 
-// 예시: 주기적으로 alerts를 요청하는 함수
 const requestGetAlerts = async ({ interval = 10000  }: { interval?: number }) => {
     if (intervalMap.GET_ALERTS) {
         console.log('Already running')
