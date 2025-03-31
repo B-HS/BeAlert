@@ -1,7 +1,7 @@
 {
     "name": "burrency-v2",
     "scripts": {
-        "dev": "bun run --hot src/index.ts & bunx @tailwindcss/cli -i ./src/static/input.css -o ./src/static/output.css --watch"
+        "dev": "bun run --hot src/index.ts & bunx @tailwindcss/cli -i ./src/static/input.css -o ./src/static/output.css --watch --minify"
     },
     "dependencies": {
         "@tailwindcss/cli": "^4.0.17",
