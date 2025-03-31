@@ -26,11 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (theme === 'dark') {
             root.classList.add('dark')
             localStorage.setItem('theme', 'dark')
-            metaThemeColor.setAttribute('content', '#000000')
+            metaThemeColor.setAttribute('content', '#ffffff')
         } else {
             root.classList.remove('dark')
             localStorage.setItem('theme', 'light')
-            metaThemeColor.setAttribute('content', '#ffffff')
+            metaThemeColor.setAttribute('content', '#000000')
         }
         updateIcons(theme)
     }
