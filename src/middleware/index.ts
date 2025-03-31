@@ -23,14 +23,6 @@ export const InitializeMiddleware = async (app: Hono) => {
         await next()
     })
 
-    app.use(
-        '/font/*',
-        serveStatic({
-            root: './src/static/font',
-            rewriteRequestPath: (path) => path.replace(/^\/font/, ''),
-        }),
-    )
-
     Object.entries(staticAssets).forEach(([route, path]) => {
         app.use(route, serveStatic({ path }))
     })

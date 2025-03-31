@@ -5,7 +5,7 @@ import { GitHubLogo } from './github'
 import { LightModeIcon } from './light'
 
 export const Layout: FC = (props) => html`
-    <!doctype html>
+    <!DOCTYPE html>
     <html lang="ko" class="light">
         <head>
             <title>BeAlert</title>

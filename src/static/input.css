@@ -37,62 +37,8 @@
     --radius-sm: calc(var(--radius) - 4px);
 }
 
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-Thin.ttf') format('truetype');
-    font-weight: 100;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-Medium.ttf') format('truetype');
-    font-weight: 500;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-ExtraBold.ttf') format('truetype');
-    font-weight: 800;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'MPLUSRounded1c';
-    src: url('/font/MPLUSRounded1c-Black.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
-}
-
-@theme {
-    --font-mplus: 'MPLUSRounded1c', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-}
-
 @layer base {
     * {
-        font-family: var(--font-mplus);
         scrollbar-width: none;
     }
 }
