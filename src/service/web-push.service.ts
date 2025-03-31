@@ -92,10 +92,7 @@ export const getLocations = async (p256dh: string) => {
             return { message: 'Subscriber not found', code: 404 }
         }
 
-        const locations = await db
-            .select()
-            .from(subscriberLocation)
-            .where(eq(subscriberLocation.subscriberId, subscriber[0].id))
+        const locations = await db.select().from(subscriberLocation).where(eq(subscriberLocation.subscriberId, subscriber[0].id))
 
         return { locations: locations.map((location) => location.location), code: 200 }
     } catch (err) {

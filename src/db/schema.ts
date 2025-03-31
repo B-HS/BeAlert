@@ -22,9 +22,7 @@ export const subscriptions = mysqlTable('subscriptions', {
 
 export const subscriberLocation = mysqlTable('subscriber_location', {
     id: bigint('id', { mode: 'number' }).primaryKey().autoincrement(),
-    subscriberId: bigint('subscriber_id', { mode: 'number' })
-        
-        .references(() => subscriptions.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
+    subscriberId: bigint('subscriber_id', { mode: 'number' }).references(() => subscriptions.id, { onDelete: 'cascade', onUpdate: 'cascade' }),
     location: varchar('location', { length: 255 }),
     createdAt: timestamp('created_at').defaultNow(),
     updatedAt: timestamp('updated_at').defaultNow().onUpdateNow(),

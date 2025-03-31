@@ -1,11 +1,11 @@
-import { sendWebPushNotification } from "@src/service"
+import { sendWebPushNotification } from '@src/service'
 
 let intervalMap = {
     GET_ALERTS: false,
 }
 let intervalIds: NodeJS.Timer[] = []
 
-const requestGetAlerts = async ({ interval = 10000  }: { interval?: number }) => {
+const requestGetAlerts = async ({ interval = 10000 }: { interval?: number }) => {
     if (intervalMap.GET_ALERTS) {
         console.log('Already running')
         return

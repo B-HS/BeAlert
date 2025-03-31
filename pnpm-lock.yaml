@@ -1,69 +1,66 @@
 lockfileVersion: '9.0'
 
 settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
+    autoInstallPeers: true
+    excludeLinksFromLockfile: false
 
 importers:
-
-  .:
-    dependencies:
-      feconfig-bhs:
-        specifier: ^1.0.7
-        version: 1.0.7
-      hono:
-        specifier: ^4.6.13
-        version: 4.6.14
-    devDependencies:
-      '@types/bun':
-        specifier: latest
-        version: 1.1.14
+    .:
+        dependencies:
+            feconfig-bhs:
+                specifier: ^1.0.7
+                version: 1.0.7
+            hono:
+                specifier: ^4.6.13
+                version: 4.6.14
+        devDependencies:
+            '@types/bun':
+                specifier: latest
+                version: 1.1.14
 
 packages:
+    '@types/bun@1.1.14':
+        resolution: { integrity: sha512-opVYiFGtO2af0dnWBdZWlioLBoxSdDO5qokaazLhq8XQtGZbY4pY3/JxY8Zdf/hEwGubbp7ErZXoN1+h2yesxA== }
 
-  '@types/bun@1.1.14':
-    resolution: {integrity: sha512-opVYiFGtO2af0dnWBdZWlioLBoxSdDO5qokaazLhq8XQtGZbY4pY3/JxY8Zdf/hEwGubbp7ErZXoN1+h2yesxA==}
+    '@types/node@20.12.14':
+        resolution: { integrity: sha512-scnD59RpYD91xngrQQLGkE+6UrHUPzeKZWhhjBSa3HSkwjbQc38+q3RoIVEwxQGRw3M+j5hpNAM+lgV3cVormg== }
 
-  '@types/node@20.12.14':
-    resolution: {integrity: sha512-scnD59RpYD91xngrQQLGkE+6UrHUPzeKZWhhjBSa3HSkwjbQc38+q3RoIVEwxQGRw3M+j5hpNAM+lgV3cVormg==}
+    '@types/ws@8.5.13':
+        resolution: { integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA== }
 
-  '@types/ws@8.5.13':
-    resolution: {integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA==}
+    bun-types@1.1.37:
+        resolution: { integrity: sha512-C65lv6eBr3LPJWFZ2gswyrGZ82ljnH8flVE03xeXxKhi2ZGtFiO4isRKTKnitbSqtRAcaqYSR6djt1whI66AbA== }
 
-  bun-types@1.1.37:
-    resolution: {integrity: sha512-C65lv6eBr3LPJWFZ2gswyrGZ82ljnH8flVE03xeXxKhi2ZGtFiO4isRKTKnitbSqtRAcaqYSR6djt1whI66AbA==}
+    feconfig-bhs@1.0.7:
+        resolution: { integrity: sha512-PAdF5o50tPdbdbG4YReyv2VD4gAYsfAlsoXhr2QcApeMM16cZxJwZAl8aJLjJUQm9kNss3E+OrQdzHq9rUh8DA== }
 
-  feconfig-bhs@1.0.7:
-    resolution: {integrity: sha512-PAdF5o50tPdbdbG4YReyv2VD4gAYsfAlsoXhr2QcApeMM16cZxJwZAl8aJLjJUQm9kNss3E+OrQdzHq9rUh8DA==}
+    hono@4.6.14:
+        resolution: { integrity: sha512-j4VkyUp2xazGJ8eCCLN1Vm/bxdvm/j5ZuU9AIjLu9vapn2M44p9L3Ktr9Vnb2RN2QtcR/wVjZVMlT5k7GJQgPw== }
+        engines: { node: '>=16.9.0' }
 
-  hono@4.6.14:
-    resolution: {integrity: sha512-j4VkyUp2xazGJ8eCCLN1Vm/bxdvm/j5ZuU9AIjLu9vapn2M44p9L3Ktr9Vnb2RN2QtcR/wVjZVMlT5k7GJQgPw==}
-    engines: {node: '>=16.9.0'}
-
-  undici-types@5.26.5:
-    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+    undici-types@5.26.5:
+        resolution: { integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA== }
 
 snapshots:
+    '@types/bun@1.1.14':
+        dependencies:
+            bun-types: 1.1.37
 
-  '@types/bun@1.1.14':
-    dependencies:
-      bun-types: 1.1.37
+    '@types/node@20.12.14':
+        dependencies:
+            undici-types: 5.26.5
 
-  '@types/node@20.12.14':
-    dependencies:
-      undici-types: 5.26.5
+    '@types/ws@8.5.13':
+        dependencies:
+            '@types/node': 20.12.14
 
-  '@types/ws@8.5.13':
-    dependencies:
-      '@types/node': 20.12.14
+    bun-types@1.1.37:
+        dependencies:
+            '@types/node': 20.12.14
+            '@types/ws': 8.5.13
 
-  bun-types@1.1.37:
-    dependencies:
-      '@types/node': 20.12.14
-      '@types/ws': 8.5.13
+    feconfig-bhs@1.0.7: {}
 
-  feconfig-bhs@1.0.7: {}
+    hono@4.6.14: {}
 
-  hono@4.6.14: {}
-
-  undici-types@5.26.5: {}
+    undici-types@5.26.5: {}

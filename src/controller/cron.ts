@@ -3,7 +3,6 @@ import { Hono } from 'hono'
 
 const SECOND = 1000
 
-
 export const CronController = (app: Hono) => {
     app.get('/start-currency-cron', async (c) => {
         startCronjob({ alerts: 1000 })

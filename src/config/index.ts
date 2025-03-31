@@ -1,5 +1,5 @@
-import { InitializeWebPush } from "./web-push"
+import { InitializeWebPush } from './web-push'
 
-export const InitializeConfig = ()=>{
+export const InitializeConfig = () => {
     InitializeWebPush()
 }

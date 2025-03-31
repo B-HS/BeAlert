@@ -67,10 +67,6 @@ const AccordionItem = ({ message }: { message: AlertMessage }) => {
 
 export const Accordion = ({ data }: PropsWithChildren<AccordionProps>) => {
     return (
-        <div class='accordion-container border-b border-border'>
-            {data?.map((message) => (
-                <AccordionItem key={message.sn} message={message} />
-            ))}
-        </div>
+        <div class='accordion-container border-b border-border'>{data?.map((message) => <AccordionItem key={message.sn} message={message} />)}</div>
     )
 }
