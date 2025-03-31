@@ -69,13 +69,14 @@ export const sendWebPushNotification = async () => {
 
     const lastPageNo = getLastPageNo(paginationData.totalCount, paginationData.pageSize)
 
-    await db.insert(latestAlertMessageInfo).values({
-        page: lastPageNo,
-        ...paginationData,
-    })
-
-    console.log('[Bealert] Latest alert pagination info', lastPageNo, alertData.totalCount)
-
+    if (alertData.numOfRows && alertData.totalCount){
+        await db.insert(latestAlertMessageInfo).values({
+            page: lastPageNo,
+            ...paginationData,
+        })
+        console.log('[Bealert] Latest alert pagination info', lastPageNo, alertData.totalCount)
+    }
+        
     const alerts = alertData.body || []
 
     const newAlerts: AlertData['body'] = []
