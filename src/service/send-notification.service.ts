@@ -56,7 +56,7 @@ export const sendWebPushNotification = async () => {
 
     const query = new URLSearchParams()
     query.append('serviceKey', process.env.SERVICE_KEY || '')
-    query.append('pageNo', latestPaginationData[0]?.page?.toString() || '1')
+    query.append('pageNo', ((latestPaginationData[0]?.page ||  1)-1).toString() || '1')
     query.append('numOfRows', latestPaginationData[0]?.pageSize?.toString() || '30')
     const url = `https://www.safetydata.go.kr/V2/api/DSSP-IF-00247?${query.toString()}`
 
