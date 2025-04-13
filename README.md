@@ -1,7 +1,6 @@
 ### (구버전은 다음 링크로)
 
 -   https://github.com/B-HS/BeAlert/tree/main
--   https://alert.hyns.dev
 
 # Be Alert
 
