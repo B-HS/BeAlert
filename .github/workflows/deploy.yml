@@ -74,7 +74,7 @@ jobs:
                   source: ./db
                   target: Desktop/containers/${{ env.PROJECT_NAME }}/db_new
 
-            - name: Sync db directory on remote
+            - name: Sync db and run migrations on remote
               uses: appleboy/ssh-action@v0.1.8
               with:
                   host: ${{ secrets.SERVER_ADDRESS }}
@@ -83,12 +83,21 @@ jobs:
                   port: ${{ secrets.SERVER_PORT }}
                   script: |
                       cd Desktop/containers/${{ env.PROJECT_NAME }}
+                      # Sync all files except sqlite.db to preserve existing data
                       mkdir -p db
                       rsync -av --exclude 'sqlite.db' db_new/db/ db/
+                      # If sqlite.db does not exist on server, copy from repo (for initial deploy)
                       if [ ! -f "db/sqlite.db" ] && [ -f "db_new/db/sqlite.db" ]; then
                           cp db_new/db/sqlite.db db/sqlite.db
                       fi
                       rm -rf db_new
+
+                      # Run migrations to update the database schema without data loss
+                      docker run --rm \
+                        -v $(pwd)/db:/app/db \
+                        -w /app \
+                        --entrypoint bun \
+                        ${{ env.PROJECT_NAME }} run migrate
 
             - name: Load image & deploy via Docker Compose on remote
               uses: appleboy/ssh-action@v0.1.8
