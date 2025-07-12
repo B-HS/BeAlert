@@ -39,7 +39,7 @@ export const Layout: FC<{ title: string; children?: any }> = ({ title, children 
                             <a href='/mypage' id='navFavorites'>
                                 즐겨찾기
                             </a>
-                            <button id='subscribeBtn' class='btn btn-primary'></button>
+                            <button id='subscribeBtn'></button>
                         </nav>
                     </header>
                     {children}
