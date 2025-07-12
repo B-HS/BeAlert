@@ -1,6 +1,6 @@
 const registeringServiceWorker = async () => {
-    let registration = await navigator.serviceWorker.register('/sw.js')
-    return registration
+    await navigator.serviceWorker.register('/sw.js')
+    return navigator.serviceWorker.ready
 }
 
 const initPushButton = async (PUBLIC_KEY) => {
