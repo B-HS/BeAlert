@@ -98,7 +98,7 @@ jobs:
                         -v $(pwd)/db:/app/db \
                         -w /app \
                         --entrypoint bun \
-                        ${{ env.PROJECT_NAME }} run migrate
+                        ${{ env.PROJECT_NAME }} db/migrate.ts
 
             - name: Load image & deploy via Docker Compose on remote
               uses: appleboy/ssh-action@v0.1.8
