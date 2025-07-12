@@ -195,12 +195,6 @@ button {
     color: #fff;
 }
 
-.container {
-    max-width: 1200px;
-    padding: 2rem 1rem;
-    background-color: #fff;
-}
-
 .favorite-management {
     padding: 0 0 3rem 0;
     border-bottom: 1px solid #e5e7eb;
