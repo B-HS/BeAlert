@@ -19,7 +19,9 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Setup Bun
-              uses: oven/setup-bun@v2
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
 
             - name: Create .env file
               run: echo "${{ env.ENV_TEXT }}" > .env
