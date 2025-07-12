@@ -1,5 +1,5 @@
 const registeringServiceWorker = async () => {
-    let registration = await navigator.serviceWorker.register('/assets/sw.js')
+    let registration = await navigator.serviceWorker.register('/sw.js')
     return registration
 }
 
@@ -11,6 +11,11 @@ const initPushButton = async (PUBLIC_KEY) => {
 
     if (subscription) {
         window.__p256dh__ = subscription.toJSON().keys.p256dh || 'NOT FOUND'
+
+        // dispatch event
+        const event = new CustomEvent('favorites:load')
+        document.dispatchEvent(event)
+
         if (btn) {
             btn.innerText = '구독 해지'
             btn.onclick = async () => {
@@ -44,29 +49,23 @@ const subscribe = async (PUBLIC_KEY) => {
         return
     }
 
-    let registration = registeringServiceWorker()
+    try {
+        if (!navigator.serviceWorker.controller) {
+            const shouldReload = !window.location.search.includes('sw=ready')
+            if (shouldReload) {
+                window.location.replace(window.location.pathname + '?sw=ready')
+                return
+            }
+        }
 
-    if (!navigator.serviceWorker.controller) {
-        const shouldReload = !window.location.search.includes('sw=ready')
-        if (shouldReload) {
-            window.location.replace(window.location.pathname + '?sw=ready')
+        const permission = await Notification.requestPermission()
+        if (permission !== 'granted') {
+            alert('알림 권한을 허용해주세요!')
             return
         }
-    }
 
-    const permission = await Notification.requestPermission()
-    if (permission !== 'granted') {
-        alert('알림 권한을 허용해주세요!')
-        return
-    }
-
-    try {
         console.log('🛠 구독 프로세스 시작')
-
-        if (!registration.active) {
-            registration = await navigator.serviceWorker.ready
-        }
-
+        const registration = await navigator.serviceWorker.ready
         let subscription = await registration.pushManager.getSubscription()
 
         if (subscription) {
@@ -97,8 +96,8 @@ const subscribe = async (PUBLIC_KEY) => {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.getAttribute('content')
     try {
-        const PUBLIC_KEY = document.querySelector('meta[name="vapid-public-key"]')?.getAttribute('content')
         await initPushButton(PUBLIC_KEY)
     } catch (error) {
         console.error('❌ 푸시 알림 초기화 실패:', error)
@@ -113,6 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    /*
     setTimeout(() => {
         new URLSearchParams(window.location.search).forEach((value, key) => {
             if (key === 'sw' && value === 'ready') {
@@ -120,4 +120,5 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         })
     }, 1000)
+    */
 })

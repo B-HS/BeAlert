@@ -4,7 +4,7 @@ export const Mypage = () => {
             <section>
                 <h2>즐겨찾는 지역 관리</h2>
                 <div class='search-form'>
-                    <div>
+                    <div class='form-row'>
                         <div class='form-group'>
                             <label for='area1'>지역 (시/도)</label>
                             <select id='area1' name='area1'>

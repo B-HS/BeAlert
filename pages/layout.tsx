@@ -4,9 +4,9 @@ import { html } from 'hono/html'
 export const Layout: FC<{ title: string; children?: any }> = ({ title, children }) => {
     let pageScript
     if (title === 'Home') {
-        pageScript = '/assets/home.js'
+        pageScript = '/home.js'
     } else if (title === 'My Page') {
-        pageScript = '/assets/mypage.js'
+        pageScript = '/mypage.js'
     }
 
     const vapidKey = Bun.env.VAPID_PUBLIC_KEY || ''
@@ -25,10 +25,10 @@ export const Layout: FC<{ title: string; children?: any }> = ({ title, children 
                     <meta name='keywords' content='alert data, 재난 데이터, 재난 문자' />
                     <meta name='vapid-public-key' content={vapidKey} />
                     <link rel='icon' href='https://blog.gumyo.net/favicon.ico' type='image/x-icon' sizes='64x64' />
-                    <link rel='manifest' href='/assets/manifest.json' />
-                    <link rel='stylesheet' href='/assets/styles.css' />
+                    <link rel='manifest' href='/manifest.json' />
+                    <link rel='stylesheet' href='/styles.css' />
                     {pageScript && <script src={pageScript} defer></script>}
-                    <script src='/assets/webpush-subscribe.js' defer></script>
+                    <script src='/webpush-subscribe.js' defer></script>
                 </head>
                 <body>
                     <header class='header'>

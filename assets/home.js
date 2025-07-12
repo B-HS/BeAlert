@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentArea2 = params.get('area2')
     const currentArea3 = params.get('area3')
 
-    fetch('/assets/locations.json')
+    fetch('/locations.json')
         .then((res) => res.json())
         .then((data) => {
             locations = data

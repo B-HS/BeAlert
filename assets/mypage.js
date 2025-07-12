@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
     }
 
-    fetch('/assets/locations.json')
+    fetch('/locations.json')
         .then((res) => res.json())
         .then((data) => {
             locations = data
@@ -219,5 +219,5 @@ document.addEventListener('DOMContentLoaded', () => {
     area2Select.addEventListener('change', populateArea3)
     addFavoriteBtn.addEventListener('click', handleAddFavorite)
 
-    loadFavorites()
+    document.addEventListener('favorites:load', loadFavorites)
 })

@@ -1,0 +1,7 @@
+services:
+    app:
+        build: .
+        ports:
+            - '20202:3000'
+        volumes:
+            - ./db:/app/db

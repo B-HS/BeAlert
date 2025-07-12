@@ -7,13 +7,13 @@ import { cache } from 'hono/cache'
 export const InitializeMiddlewares = (app: Hono) => {
     app.use('*', compress())
     app.use(
-        '/assets/*',
+        '/*',
         cache({
             cacheName: 'bealert-v3-assets',
             cacheControl: 'public, max-age=86400',
         })
     )
-    app.use('/assets/*', serveStatic({ root: './' }))
+    app.use('/*', serveStatic({ root: './assets' }))
     webPushMiddleware()
     return app
 }
