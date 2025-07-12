@@ -18,11 +18,6 @@ jobs:
             - name: Checkout Code
               uses: actions/checkout@v4
 
-            - name: Setup Bun
-              uses: oven-sh/setup-bun@v2
-              with:
-                  bun-version: latest
-
             - name: Create .env file
               run: echo "${{ env.ENV_TEXT }}" > .env
 
@@ -89,9 +84,9 @@ jobs:
                   script: |
                       cd Desktop/containers/${{ env.PROJECT_NAME }}
                       mkdir -p db
-                      rsync -av --exclude 'sqlite.db' db_new/ db/
-                      if [ ! -f "db/sqlite.db" ] && [ -f "db_new/sqlite.db" ]; then
-                          cp db_new/sqlite.db db/sqlite.db
+                      rsync -av --exclude 'sqlite.db' db_new/db/ db/
+                      if [ ! -f "db/sqlite.db" ] && [ -f "db_new/db/sqlite.db" ]; then
+                          cp db_new/db/sqlite.db db/sqlite.db
                       fi
                       rm -rf db_new
 
