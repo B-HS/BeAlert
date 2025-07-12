@@ -1,0 +1,19 @@
+{
+  "name": "bealert-v3",
+  "scripts": {
+    "dev": "bun run --hot main.ts",
+    "build": "bun run scripts/build.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.2",
+    "feconfig-bhs": "^1.0.7",
+    "hono": "^4.8.4",
+    "web-push": "^3.6.7"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/web-push": "^3.6.4",
+    "better-sqlite3": "^12.2.0",
+    "drizzle-kit": "^0.31.4"
+  }
+}

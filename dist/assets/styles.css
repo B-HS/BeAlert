@@ -1,0 +1,207 @@
+:root {
+    --badge-font-size: 0.555rem;
+    --detail-label-font-size: 0.555rem;
+    --detail-value-font-size: 0.75rem;
+    --pagination-font-size: 0.75rem;
+    --empty-message-font-size: 0.75rem;
+    --header-font-size: 0.75rem;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+    font-size: var(--header-font-size);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #ddd;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+a,
+button {
+    text-decoration: none;
+    color: inherit;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.container {
+    padding-bottom: 2.5rem;
+}
+
+.disaster-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.disaster-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-top: 1px solid #ddd;
+}
+
+.disaster-item:first-child {
+    border-top: none;
+}
+
+.disaster-item:last-child {
+    border-bottom: 1px solid #ddd;
+}
+
+.disaster-summary {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 1rem;
+}
+
+.summary-header-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-badge {
+    font-size: var(--badge-font-size);
+    font-weight: 800;
+    border: 1px solid #ddd;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.area-badge {
+    flex-shrink: 0;
+}
+
+.area-count {
+    color: #666;
+    font-weight: 500;
+}
+
+.summary-message {
+    width: 100%;
+    line-clamp: 1;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.details-content {
+    border-radius: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.detail-label {
+    font-size: var(--detail-label-font-size);
+    font-weight: 700;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    width: fit-content;
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+}
+
+.detail-value {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.message-content {
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    background-color: #fff;
+}
+
+.no-data {
+    color: #999;
+    font-style: italic;
+}
+
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.empty-message {
+    font-weight: 700;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.pagination-container {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pagination-item {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+}
+
+.pagination-item.active {
+    background-color: #007bff;
+    color: #fff;
+}
+
+@media (min-width: 480px) {
+    :root {
+        --badge-font-size: 0.755rem;
+        --detail-label-font-size: 0.755rem;
+        --detail-value-font-size: 1rem;
+        --pagination-font-size: 1rem;
+        --empty-message-font-size: 1rem;
+        --header-font-size: 1rem;
+    }
+}
