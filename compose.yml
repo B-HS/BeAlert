@@ -1,7 +1,8 @@
 services:
     app:
         build: .
+        restart: always
         ports:
-            - '20202:3000'
+            - '${PROJECT_PORT}:3000'
         volumes:
             - ./db:/app/db
