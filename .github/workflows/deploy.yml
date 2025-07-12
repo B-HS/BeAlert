@@ -82,6 +82,7 @@ jobs:
                   password: ${{ secrets.SERVER_PASSWORD }}
                   port: ${{ secrets.SERVER_PORT }}
                   script: |
+                      export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
                       cd Desktop/containers/${{ env.PROJECT_NAME }}
                       # Sync all files except sqlite.db to preserve existing data
                       mkdir -p db
