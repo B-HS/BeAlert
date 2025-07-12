@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY --from=base /app/dist ./
 COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/db/sqlite.db ./db/
+COPY --from=base /app/db ./db
 COPY .env .env
 
 EXPOSE 3000
