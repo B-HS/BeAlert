@@ -1,11 +1,8 @@
-To install dependencies:
-```sh
-bun install
-```
-
-To run:
-```sh
-bun run dev
-```
-
-open http://localhost:3000
+BeAlert
+---
+- Hono
+- Drizzle
+- BunSQLite
+- PWA
+---
+- 추후에 페이지 변경되면 service만 갈아끼워서 계속 쓸 예정 ..
