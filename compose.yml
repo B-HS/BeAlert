@@ -1,6 +1,7 @@
 services:
     app:
-        build: .
+        image: '${PROJECT_NAME}'
+        container_name: '${PROJECT_NAME}'
         restart: always
         ports:
             - '${PROJECT_PORT}:3000'
